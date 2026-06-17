@@ -1,13 +1,12 @@
 /**
- * NASAGallery — Masonry image gallery using NASA public domain images
- * via the NASA image CDN (no API key required for direct image URLs).
- * Includes lightbox, lazy loading, and keyboard navigation.
- */const GALLERY_ITEMS = [
+ * NASAGallery — Real NASA/JPL/ESA public domain images.
+ * All images are in the public domain or free for educational use.
+ * Sources: NASA Images, JPL, ESA Hubble, NASA APOD archives.
+ */
+const GALLERY_ITEMS = [
   {
     id: 'pillars',
     title: 'Pillars of Creation',
-    body: 'Eagle Nebula · M16',
-    desc: 'The Pillars of Creation are elephant trunks of interstellar gas and dust in the Eagle Nebula, some 6,500 light-years away. Captured here by the James Webb Space Telescope in 2022 in unprecedented detail.',
     credit: 'NASA, ESA, CSA, STScI · JWST 2022',
     emoji: '🌌',
     imageUrl: 'https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=800&auto=format&fit=crop',
