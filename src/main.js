@@ -802,125 +802,137 @@ function initIntro() {
   });
 }
 
-// ── Ambient Audio ────────────────────────────────────────────
+// ── Ambient Audio — Violin music + tiny on/off button ────────
 function initAudio() {
   const audio = new AmbientAudio();
-
-  // ── Build the persistent floating player widget ──
-  const player = document.createElement('div');
-  player.id = 'audio-player';
-  player.setAttribute('role', 'region');
-  player.setAttribute('aria-label', 'Ambient music player');
-  player.innerHTML = `
-    <div class="audio-eq paused" id="audio-eq" aria-hidden="true">
-      <div class="audio-eq-bar" style="height:40%"></div>
-      <div class="audio-eq-bar" style="height:70%"></div>
-      <div class="audio-eq-bar" style="height:55%"></div>
-      <div class="audio-eq-bar" style="height:85%"></div>
-    </div>
-    <span class="audio-label">Ambient</span>
-    <div class="audio-volume-wrap">
-      <input
-        type="range" class="audio-volume" id="audio-vol"
-        min="0" max="100" value="40"
-        aria-label="Music volume"
-      />
-      <div class="audio-volume-track" id="audio-vol-track" style="width:40%"></div>
-    </div>
-    <button class="audio-mute-btn" id="audio-mute" aria-label="Mute ambient music" title="Mute / Unmute">
-      🔊
-    </button>
-  `;
-  document.body.appendChild(player);
-
-  // ── One-time start guard ──
   let musicStarted = false;
   let startPending = false;
+  let isPlaying    = true; // optimistic: will be true once started
 
-  // Must be async so we can await audio.start() (which awaits ctx.resume())
+  /* ── Tiny floating on/off button ── */
+  const btn = document.createElement('button');
+  btn.id = 'music-toggle-btn';
+  btn.setAttribute('aria-label', 'Toggle violin music');
+  btn.title = 'Toggle music';
+  btn.innerHTML = `
+    <svg id="mtb-icon-on" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+    </svg>
+    <svg id="mtb-icon-off" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="display:none">
+      <line x1="2" y1="2" x2="22" y2="22"/><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+    </svg>
+  `;
+
+  /* Inline style — tiny, minimal, bottom-left */
+  Object.assign(btn.style, {
+    position:       'fixed',
+    bottom:         '1.5rem',
+    left:           '1.5rem',
+    zIndex:         '500',
+    width:          '34px',
+    height:         '34px',
+    borderRadius:   '3px',
+    background:     'rgba(5,6,14,0.90)',
+    border:         '1px solid rgba(255,255,255,0.08)',
+    color:          'rgba(255,255,255,0.45)',
+    display:        'flex',
+    alignItems:     'center',
+    justifyContent: 'center',
+    cursor:         'pointer',
+    transition:     'all 0.28s',
+    backdropFilter: 'blur(20px)',
+    opacity:        '0',
+    pointerEvents:  'none',
+  });
+
+  document.body.appendChild(btn);
+
+  /* Show after 2s */
+  setTimeout(() => {
+    btn.style.opacity      = '1';
+    btn.style.pointerEvents = 'all';
+  }, 2000);
+
+  /* Hover effect */
+  btn.addEventListener('mouseenter', () => {
+    btn.style.color       = 'rgba(77,159,255,0.9)';
+    btn.style.borderColor = 'rgba(77,159,255,0.3)';
+    btn.style.transform   = 'scale(1.08)';
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.color       = isPlaying
+      ? 'rgba(77,159,255,0.65)'
+      : 'rgba(255,255,255,0.28)';
+    btn.style.borderColor = isPlaying
+      ? 'rgba(77,159,255,0.22)'
+      : 'rgba(255,255,255,0.07)';
+    btn.style.transform   = 'scale(1)';
+  });
+
+  /* ── Start music on first user click anywhere ── */
   async function startMusic() {
     if (musicStarted || startPending) return;
     startPending = true;
-
     try {
-      // CRITICAL: await the async start so AudioContext is running before
-      // we try to schedule any gain ramps or show UI feedback.
       await audio.start();
     } catch (err) {
       console.warn('Cosmic Odyssey — Audio start failed:', err);
       startPending = false;
       return;
     }
-
     musicStarted = true;
+    isPlaying    = true;
+    _setOn();
 
-    // Show the floating player (fade-in handled by CSS transition)
-    player.classList.add('visible');
-
-    // Activate EQ bar animation
-    document.getElementById('audio-eq')?.classList.remove('paused');
-
-    // Update launch button state
+    // Also update any existing launch label
     const launchBtn   = document.getElementById('audio-launch-btn');
     const launchLabel = document.getElementById('audio-launch-label');
     if (launchBtn)   launchBtn.classList.add('playing');
-    if (launchLabel) launchLabel.textContent = '♪ Music Playing';
+    if (launchLabel) launchLabel.textContent = '♪ Playing';
   }
 
-  // ── Single delegated click listener ──
-  // IMPORTANT: Only the explicit launch button triggers audio.
-  // Do NOT attach to #live section or .iframe-wrap — doing so causes
-  // AudioContext fingerprinting to fire on iframe interaction, which
-  // Cloudflare's bot-detection scores as automated/headless behaviour.
-  document.addEventListener('click', (e) => {
-    if (musicStarted || startPending) return;
-    const launchBtn = document.getElementById('audio-launch-btn');
-    if (launchBtn && (e.target === launchBtn || launchBtn.contains(e.target))) {
-      startMusic();
+  /* ── Toggle on click ── */
+  btn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!musicStarted) {
+      await startMusic();
+      return;
     }
-  }, { passive: true });
-
-  // ── Mute / unmute ──
-  // Use event delegation so it works even if player is added after DOMContentLoaded
-  document.addEventListener('click', (e) => {
-    const muteBtn = document.getElementById('audio-mute');
-    if (!muteBtn || !(e.target === muteBtn || muteBtn.contains(e.target))) return;
-    if (!musicStarted) return;
-
-    const isMuted = audio.toggleMute();   // schedules 1s fade-out or 0.5s fade-in
-    const eq      = document.getElementById('audio-eq');
-
-    muteBtn.textContent = isMuted ? '🔇' : '🔊';
-    muteBtn.classList.toggle('muted', isMuted);
-    muteBtn.setAttribute('aria-label', isMuted ? 'Unmute ambient music' : 'Mute ambient music');
-    if (eq) eq.classList.toggle('paused', isMuted);
+    isPlaying = !isPlaying;
+    if (isPlaying) {
+      await audio.resume();
+      _setOn();
+    } else {
+      audio.stop();
+      _setOff();
+    }
   });
 
-  // ── Volume slider ──
-  document.addEventListener('input', (e) => {
-    if (e.target.id !== 'audio-vol') return;
-    const pct = Number(e.target.value);
-    const v   = pct / 100;
+  /* ── Auto-start on first interaction anywhere ── */
+  const _autoStart = (e) => {
+    // Exclude iframe to avoid Cloudflare fingerprinting issues
+    if (e.target.closest('iframe, #sss-iframe')) return;
+    startMusic();
+    document.removeEventListener('click', _autoStart, { capture: true });
+  };
+  document.addEventListener('click', _autoStart, { capture: true, passive: true });
 
-    // Update the filled-track indicator
-    const volTrack = document.getElementById('audio-vol-track');
-    if (volTrack) volTrack.style.width = pct + '%';
+  /* ── Icon helpers ── */
+  function _setOn() {
+    document.getElementById('mtb-icon-on').style.display  = '';
+    document.getElementById('mtb-icon-off').style.display = 'none';
+    btn.style.color       = 'rgba(77,159,255,0.65)';
+    btn.style.borderColor = 'rgba(77,159,255,0.22)';
+    btn.setAttribute('aria-label', 'Pause violin music');
+  }
 
-    // If dragged while muted, unmute first
-    if (audio.muted && v > 0) {
-      audio.muted = false;
-      const muteBtn = document.getElementById('audio-mute');
-      const eq      = document.getElementById('audio-eq');
-      if (muteBtn) {
-        muteBtn.textContent = '🔊';
-        muteBtn.classList.remove('muted');
-        muteBtn.setAttribute('aria-label', 'Mute ambient music');
-      }
-      if (eq) eq.classList.remove('paused');
-    }
-
-    audio.setVolume(v);
-  });
+  function _setOff() {
+    document.getElementById('mtb-icon-on').style.display  = 'none';
+    document.getElementById('mtb-icon-off').style.display = '';
+    btn.style.color       = 'rgba(255,255,255,0.28)';
+    btn.style.borderColor = 'rgba(255,255,255,0.07)';
+    btn.setAttribute('aria-label', 'Play violin music');
+  }
 }
 
 // ── Iframe load guard — detect Cloudflare challenge & activate fallback ──
