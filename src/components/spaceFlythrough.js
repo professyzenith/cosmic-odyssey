@@ -51,14 +51,14 @@ const PLANET_INFO={
   neptune:{name:'Neptune',type:'Ice Giant',  radius:'24,622 km',distSun:'4.50B km',orbPeriod:'165 years',rotPeriod:'16.1 hours',temp:'-200°C',moons:16,desc:'The windiest planet (2,100 km/h gusts). Predicted mathematically before it was first observed.'},
 };
 const PLANETS=[
-  {id:'mercury',radius:0.40,orbitR:9, speed:0.041, tilt:0.03, atmoColor:null},
-  {id:'venus',  radius:0.95,orbitR:13,speed:0.016, tilt:177.4,atmoColor:'#FFD080',aC:0.7,aP:3.5},
-  {id:'earth',  radius:1.00,orbitR:17,speed:0.010, tilt:23.4, atmoColor:'#4499FF',aC:0.6,aP:4.5,hasMoon:true},
-  {id:'mars',   radius:0.55,orbitR:22,speed:0.005, tilt:25.2, atmoColor:'#FF8844',aC:0.35,aP:5.0},
-  {id:'jupiter',radius:2.90,orbitR:34,speed:0.0008,tilt:3.1,  atmoColor:'#C8A870',aC:0.5,aP:3.5},
-  {id:'saturn', radius:2.35,orbitR:44,speed:0.0003,tilt:26.7, atmoColor:'#E4D5A0',aC:0.5,aP:3.5,rings:true},
-  {id:'uranus', radius:1.75,orbitR:54,speed:0.0001,tilt:97.8, atmoColor:'#88EEEE',aC:0.55,aP:4.0,thinRings:true},
-  {id:'neptune',radius:1.65,orbitR:63,speed:0.00006,tilt:28.3,atmoColor:'#4466DD',aC:0.55,aP:4.0},
+  {id:'mercury',radius:0.40,orbitR:9, speed:0.041, tilt:0.03, atmoColor:'#996633',aC:0.18,aP:5.5},
+  {id:'venus',  radius:0.95,orbitR:13,speed:0.016, tilt:177.4,atmoColor:'#FFD080',aC:0.92,aP:2.8},
+  {id:'earth',  radius:1.00,orbitR:17,speed:0.010, tilt:23.4, atmoColor:'#4499FF',aC:0.88,aP:3.2,hasMoon:true},
+  {id:'mars',   radius:0.55,orbitR:22,speed:0.005, tilt:25.2, atmoColor:'#FF8844',aC:0.55,aP:4.0},
+  {id:'jupiter',radius:2.90,orbitR:34,speed:0.0008,tilt:3.1,  atmoColor:'#C8A870',aC:0.68,aP:3.0},
+  {id:'saturn', radius:2.35,orbitR:44,speed:0.0003,tilt:26.7, atmoColor:'#E4D5A0',aC:0.68,aP:3.0,rings:true},
+  {id:'uranus', radius:1.75,orbitR:54,speed:0.0001,tilt:97.8, atmoColor:'#88EEEE',aC:0.72,aP:3.2,thinRings:true},
+  {id:'neptune',radius:1.65,orbitR:63,speed:0.00006,tilt:28.3,atmoColor:'#4466DD',aC:0.75,aP:3.0},
 ];
 const GLOW=['#B0B0A8','#E8C56B','#2E8FF5','#C1440E','#C8A87A','#E4D5A0','#7DE8E8','#4060D8'];
 const NEARBY_STARS=[
@@ -86,6 +86,9 @@ export class SolarSystem3D{
     this._travelPos=null; this._travelTarget=null; this._travelT=1;
     this._solarPos=null; this._solarVel=null; this._solarGeo=null;
     this._currentZoneId=null; this._narTimeout=null;
+    /* Orbit-around-focus: camera orbits _orbitCenter, smoothly targets _orbitCenterTarget */
+    this._orbitCenter=new THREE.Vector3();
+    this._orbitCenterTarget=new THREE.Vector3();
     /* LOD material refs */
     this._stellarNeighMat=null; this._orionArmMat=null;
     this._orionNebMats=[]; this._galaxyDiscMat=null;
@@ -100,11 +103,11 @@ export class SolarSystem3D{
     Object.assign(this.renderer.domElement.style,{position:'fixed',inset:'0',zIndex:'600',opacity:'0',transition:'opacity 1.2s'});
     this.container.appendChild(this.renderer.domElement);
     this.scene=new THREE.Scene();
-    this.camera=new THREE.PerspectiveCamera(52,W/H,0.05,25000);
+    this.camera=new THREE.PerspectiveCamera(52,W/H,0.01,25000);
     this._updateCamImmediate();
     this.composer=new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene,this.camera));
-    this._bloom=new UnrealBloomPass(new THREE.Vector2(W,H),0.6,0.4,0.65);
+    this._bloom=new UnrealBloomPass(new THREE.Vector2(W,H),0.75,0.42,0.6);
     this.composer.addPass(this._bloom);
     this._buildLoadScreen();
     this._loadTextures().then(tex=>{
@@ -475,6 +478,10 @@ export class SolarSystem3D{
     this._buildSkipButton();
     this._raycaster=new THREE.Raycaster();
     this._mouse=new THREE.Vector2();
+    /* Cinematic vignette */
+    const vig=document.createElement('div');
+    Object.assign(vig.style,{position:'fixed',inset:'0',zIndex:'598',background:'radial-gradient(ellipse at 50% 50%, transparent 48%, rgba(0,0,5,0.55) 100%)',pointerEvents:'none'});
+    this.container.appendChild(vig);
   }
 
   /* ── Top bar ─────────────────────────────────────────────── */
@@ -647,7 +654,7 @@ export class SolarSystem3D{
     this._infoPanel.querySelector('#ssp-st').innerHTML=[['Radius',info.radius],['Dist. Sun',info.distSun],['Orbit',info.orbPeriod],['Day',info.rotPeriod],['Temp.',info.temp],['Moons',info.moons]].map(([k,v])=>`<div><div style="font-size:8px;letter-spacing:0.18em;color:rgba(255,255,255,0.28);text-transform:uppercase;margin-bottom:3px">${k}</div><div style="font-size:13px;font-weight:600">${v}</div></div>`).join('');
     this._infoPanel.style.transform='translateX(0)';this._selectedId=id;
   }
-  _closePanel(){this._infoPanel.style.transform='translateX(100%)';this._selectedId=null;}
+  _closePanel(){this._infoPanel.style.transform='translateX(100%)';this._selectedId=null;this._orbitCenterTarget.set(0,0,0);}
 
   /* ── Time bar ────────────────────────────────────────────── */
   _buildTimeBar(){
@@ -715,10 +722,11 @@ export class SolarSystem3D{
   _onMUp(e){const dx=Math.abs(e.clientX-this._clickStart.x),dy=Math.abs(e.clientY-this._clickStart.y);if(dx<5&&dy<5)this._handleClick(e);}
   _onWheel(e){
     if(!this._introDone)return;
-    /* Adaptive speed: slow near planets, fast in deep space */
-    const r=this._targetR;
-    const spd=r<30?0.04:r<200?r*0.009:r<1000?r*0.013:r<5000?r*0.016:r*0.02;
-    this._targetR=Math.max(2,Math.min(18000,r+e.deltaY*spd));
+    /* Proportional zoom — feels natural at ALL scales (planet surface → galaxy) */
+    /* Math.pow(1.0012, 100) ≈ 1.127 → ~13% zoom per mouse-wheel notch */
+    const delta=Math.sign(e.deltaY)*Math.min(Math.abs(e.deltaY),250);
+    const factor=Math.pow(1.0012,delta);
+    this._targetR=Math.max(0.8,Math.min(18000,this._targetR*factor));
     this._travelPos=null;
   }
   _handleClick(e){
@@ -731,11 +739,33 @@ export class SolarSystem3D{
   }
 
   /* ── Camera ──────────────────────────────────────────────── */
-  _updateCamImmediate(){const r=this._camR;this.camera.position.set(r*Math.sin(this._camPhi)*Math.sin(this._camTheta),r*Math.cos(this._camPhi),r*Math.sin(this._camPhi)*Math.cos(this._camTheta));this.camera.lookAt(0,0,0);}
-  _updateCamLerp(){const r=this._camR,tp=new THREE.Vector3(r*Math.sin(this._camPhi)*Math.sin(this._camTheta),r*Math.cos(this._camPhi),r*Math.sin(this._camPhi)*Math.cos(this._camTheta));this.camera.position.lerp(tp,0.07);this.camera.lookAt(0,0,0);}
+  _updateCamImmediate(){
+    const r=this._camR,oc=this._orbitCenter;
+    this.camera.position.set(oc.x+r*Math.sin(this._camPhi)*Math.sin(this._camTheta),oc.y+r*Math.cos(this._camPhi),oc.z+r*Math.sin(this._camPhi)*Math.cos(this._camTheta));
+    this.camera.lookAt(oc);
+  }
+  _updateCamLerp(){
+    /* Smoothly glide orbit center toward its target */
+    this._orbitCenter.lerp(this._orbitCenterTarget,0.038);
+    const r=this._camR,oc=this._orbitCenter;
+    const tp=new THREE.Vector3(oc.x+r*Math.sin(this._camPhi)*Math.sin(this._camTheta),oc.y+r*Math.cos(this._camPhi),oc.z+r*Math.sin(this._camPhi)*Math.cos(this._camTheta));
+    this.camera.position.lerp(tp,0.07);
+    this.camera.lookAt(oc);
+  }
 
-  _focusPlanet(obj){const wp=new THREE.Vector3();obj.mesh.getWorldPosition(wp);const d=obj.data.radius*8+5;this._travelPos=wp.clone().add(new THREE.Vector3(d*.8,d*.5,d*.8));this._travelTarget=wp.clone();this._travelT=0;this._touring=false;}
-  _flyCloser(obj){const wp=new THREE.Vector3();obj.mesh.getWorldPosition(wp);const d=obj.data.radius*2.5;this._travelPos=wp.clone().add(new THREE.Vector3(d,d*.4,d));this._travelTarget=wp.clone();this._travelT=0;}
+  _focusPlanet(obj){
+    const wp=new THREE.Vector3(); obj.mesh.getWorldPosition(wp);
+    /* Shift orbit center to planet — scroll now zooms around planet, not sun */
+    this._orbitCenterTarget.copy(wp);
+    this._targetR=Math.max(obj.data.radius*5+3, this._targetR>200?obj.data.radius*6+4:this._targetR);
+    this._travelPos=null; this._touring=false;
+  }
+  _flyCloser(obj){
+    const wp=new THREE.Vector3(); obj.mesh.getWorldPosition(wp);
+    this._orbitCenterTarget.copy(wp);
+    this._targetR=obj.data.radius*1.55+0.35;
+    this._travelPos=null;
+  }
   _updateTour(dt){if(!this._touring||!this._introDone)return;this._tourTimer-=dt;if(this._tourTimer<=0){this._focusPlanet(this.objects[this._tourIdx%this.objects.length]);this._tourTimer=6;this._tourIdx++;}}
 
   /* ── LOD opacity manager ─────────────────────────────────── */
@@ -788,7 +818,14 @@ export class SolarSystem3D{
         const ease=easeOutQuart(this._travelT);
         this.camera.position.lerp(this._travelPos,ease*dt*2.2);
         this.camera.lookAt(this._travelTarget||new THREE.Vector3());
-        if(this._travelT>=0.98)this._travelPos=null;
+        if(this._travelT>=0.98){
+          this._travelPos=null;
+          /* Sync orbit params from final camera pos relative to orbitCenter */
+          const off=this.camera.position.clone().sub(this._orbitCenter);
+          this._camR=Math.max(0.8,off.length()); this._targetR=this._camR;
+          this._camPhi=Math.acos(Math.min(1,Math.max(-1,off.y/Math.max(0.001,this._camR))));
+          this._camTheta=Math.atan2(off.x,off.z);
+        }
       } else {
         if(!this._drag){this._velTheta*=0.92;this._velPhi*=0.92;this._camTheta-=this._velTheta;this._camPhi=Math.max(0.1,Math.min(1.45,this._camPhi-this._velPhi));}
         this._camR+=(this._targetR-this._camR)*0.055;
@@ -840,6 +877,12 @@ export class SolarSystem3D{
         c.line.position.addScaledVector(c.dir,c.speed*dt*60);
         if(c.life>=c.maxLife){this.scene.remove(c.line);c.line.geometry.dispose();this.comets.splice(i,1);}
       }
+
+      /* Dynamic bloom: stronger near sun / planet surfaces */
+      let _nd=this.camera.position.length();
+      this.objects.forEach(o=>{const _wp=new THREE.Vector3();o.mesh.getWorldPosition(_wp);const _d=this.camera.position.distanceTo(_wp)-o.data.radius;if(_d<_nd)_nd=_d;});
+      this._bloom.strength=Math.max(0.28,Math.min(1.65,0.52+14/Math.max(4,_nd)));
+      this._bloom.radius  =Math.max(0.26,Math.min(0.56,0.30+ 7/Math.max(7,_nd)));
 
       this.composer.render();
     };
