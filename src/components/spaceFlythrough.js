@@ -71,7 +71,7 @@ const PLANETS = [
   { id:'venus',   radius:0.95, orbitR:13, speed:0.016,  tilt:177.4, atmoColor:'#FFD080', atmoCoeff:0.7, atmoPow:3.5 },
   { id:'earth',   radius:1.00, orbitR:17, speed:0.010,  tilt:23.4,  atmoColor:'#4499FF', atmoCoeff:0.6, atmoPow:4.5, hasMoon:true },
   { id:'mars',    radius:0.55, orbitR:22, speed:0.005,  tilt:25.2,  atmoColor:'#FF8844', atmoCoeff:0.35,atmoPow:5.0 },
-  { id:'jupiter', radius:2.90, orbitR:34, speed:0.0008, tilt:3.1,   atmoColor:'#C8A870', atmoCoeff:0.5, atmoPow:3.5, rings:true   },
+  { id:'jupiter', radius:2.90, orbitR:34, speed:0.0008, tilt:3.1,   atmoColor:'#C8A870', atmoCoeff:0.5, atmoPow:3.5 },
   { id:'saturn',  radius:2.35, orbitR:44, speed:0.0003, tilt:26.7,  atmoColor:'#E4D5A0', atmoCoeff:0.5, atmoPow:3.5, rings:true   },
   { id:'uranus',  radius:1.75, orbitR:54, speed:0.0001, tilt:97.8,  atmoColor:'#88EEEE', atmoCoeff:0.55,atmoPow:4.0, thinRings:true },
   { id:'neptune', radius:1.65, orbitR:63, speed:0.00006,tilt:28.3,  atmoColor:'#4466DD', atmoCoeff:0.55,atmoPow:4.0 },
@@ -223,11 +223,11 @@ export class SolarSystem3D {
   /* ── Nebula sprites ─────────────────────────────────────── */
   _buildNebulaeSprites(){
     const nebulae=[
-      {color:'rgba(120,40,180,0.12)',  pos:[380,120,-300], scale:320},
-      {color:'rgba(40,80,200,0.10)',   pos:[-320,-80,400], scale:280},
-      {color:'rgba(180,40,60,0.09)',   pos:[250,180,320],  scale:240},
-      {color:'rgba(40,160,140,0.08)',  pos:[-400,60,-250], scale:300},
-      {color:'rgba(200,120,40,0.07)',  pos:[180,-200,-380],scale:260},
+      {color:'rgba(120,40,180,0.07)',  pos:[680,200,-550], scale:480},
+      {color:'rgba(40,80,200,0.06)',   pos:[-600,-120,700],scale:420},
+      {color:'rgba(180,40,60,0.055)', pos:[500,280,600],   scale:380},
+      {color:'rgba(40,160,140,0.05)', pos:[-720,80,-480],  scale:440},
+      {color:'rgba(180,100,20,0.045)',pos:[400,-300,-650],  scale:400},
     ];
     nebulae.forEach(({color,pos,scale})=>{
       const c=document.createElement('canvas'); c.width=c.height=256;
@@ -262,20 +262,20 @@ export class SolarSystem3D {
     this.sunMesh=new THREE.Mesh(new THREE.SphereGeometry(3.5,48,48),mat);
     this.scene.add(this.sunMesh);
     this._coronas=[];
-    [{r:6.2,op:0.20,c:0xFF9900},{r:10,op:0.12,c:0xFF7700},{r:15,op:0.06,c:0xFF5500},{r:24,op:0.028,c:0xFF3300}].forEach(d=>{
+    [{r:4.8,op:0.16,c:0xFFCC44},{r:7,op:0.09,c:0xFFAA22},{r:11,op:0.045,c:0xFF8800},{r:18,op:0.018,c:0xFF6600}].forEach(d=>{
       const m=new THREE.MeshBasicMaterial({color:d.c,transparent:true,opacity:d.op,side:THREE.FrontSide,depthWrite:false});
       const mesh=new THREE.Mesh(new THREE.SphereGeometry(d.r,24,24),m);
       this.scene.add(mesh); this._coronas.push({mesh,base:d.op});
     });
-    /* Sun atmosphere glow */
-    this.scene.add(new THREE.Mesh(new THREE.SphereGeometry(5,24,24),makeAtmoMat('#FF8800',1.2,2.5)));
+    /* Sun atmosphere glow — subtle golden rim only */
+    this.scene.add(new THREE.Mesh(new THREE.SphereGeometry(4.2,24,24),makeAtmoMat('#FFCC44',0.7,3.5)));
     /* Flare */
     const fc=document.createElement('canvas');fc.width=fc.height=256;
     const fg=fc.getContext('2d'),fgr=fg.createRadialGradient(128,128,0,128,128,128);
-    fgr.addColorStop(0,'rgba(255,255,220,1)');fgr.addColorStop(0.06,'rgba(255,230,140,0.85)');fgr.addColorStop(0.22,'rgba(255,160,30,0.28)');fgr.addColorStop(0.55,'rgba(255,80,0,0.07)');fgr.addColorStop(1,'transparent');
+    fgr.addColorStop(0,'rgba(255,255,230,1)');fgr.addColorStop(0.06,'rgba(255,240,160,0.88)');fgr.addColorStop(0.2,'rgba(255,180,40,0.22)');fgr.addColorStop(0.5,'rgba(255,100,0,0.05)');fgr.addColorStop(1,'transparent');
     fg.fillStyle=fgr;fg.fillRect(0,0,256,256);
-    this.flareSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fc),transparent:true,opacity:0.85,blending:THREE.AdditiveBlending,depthWrite:false}));
-    this.flareSpr.scale.set(32,32,1);this.scene.add(this.flareSpr);
+    this.flareSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fc),transparent:true,opacity:0.75,blending:THREE.AdditiveBlending,depthWrite:false}));
+    this.flareSpr.scale.set(28,28,1);this.scene.add(this.flareSpr);
   }
 
   /* ── Solar particle wind ─────────────────────────────────── */
