@@ -163,7 +163,10 @@ export class SolarSystem3D{
     this._buildHeliosphere();
     this._buildOortCloud();
     this._buildNearbyStarSystems();
-    this._buildMilkyWay();
+    /* Defer Milky Way — heavy 60k particle loop, build after first frame */
+    setTimeout(()=>{
+      try{ this._buildMilkyWay(); }catch(e){ console.warn('Milky Way build error:',e); }
+    },300);
   }
 
   /* ── Skybox ─────────────────────────────────────────────── */
@@ -365,7 +368,7 @@ export class SolarSystem3D{
     const GRAD=1900; /* galaxy radius in scene units */
 
     /* ─ Disc + spiral arms ─ */
-    const ND=100000,posD=new Float32Array(ND*3),colD=new Float32Array(ND*3);
+    const ND=60000,posD=new Float32Array(ND*3),colD=new Float32Array(ND*3);
     for(let i=0;i<ND;i++){
       let x,y,z;
       const type=Math.random();
@@ -415,7 +418,9 @@ export class SolarSystem3D{
       const m=new THREE.Mesh(new THREE.SphereGeometry(r,24,24),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));
       m.position.copy(GC);this.scene.add(m);
     });
-    this.scene.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(320,24,24),makeAtmoMat('#FFD080',0.9,2.2)),{position:GC.clone()}));
+    const atmoGlow=new THREE.Mesh(new THREE.SphereGeometry(320,24,24),makeAtmoMat('#FFD080',0.9,2.2));
+    atmoGlow.position.copy(GC);
+    this.scene.add(atmoGlow);
 
     /* Mark galactic center position */
     this._gcPos=GC;
