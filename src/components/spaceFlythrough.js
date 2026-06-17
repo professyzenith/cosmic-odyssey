@@ -28,15 +28,15 @@ const lerp=(a,b,t)=>a+(b-a)*t;
 
 /* ── 9 Narrative Scale Zones ───────────────────────────────── */
 const ZONES=[
-  {id:'earth',      minR:0,     maxR:14,    title:'Earth',               sub:'THE BLUE MARBLE · 6,371 KM RADIUS',                         color:'#4499FF'},
-  {id:'moon',       minR:14,    maxR:45,    title:'The Earth–Moon System',sub:'384,400 KM BETWEEN WORLDS',                                 color:'#AABBCC'},
-  {id:'inner_ss',   minR:45,    maxR:150,   title:'The Inner Solar System',sub:'MERCURY TO MARS · SUN AT THE CENTRE',                     color:'#FFB844'},
-  {id:'outer_ss',   minR:150,   maxR:380,   title:'The Outer Solar System',sub:'JUPITER TO NEPTUNE · 30 AU FROM THE SUN',                 color:'#88AACC'},
-  {id:'oort',       minR:380,   maxR:900,   title:'The Oort Cloud',       sub:'THE SOLAR SYSTEM\'S OUTER SHELL · ~100,000 AU ACROSS',     color:'#8899BB'},
-  {id:'near_stars', minR:900,   maxR:2500,  title:'Nearby Star Systems',  sub:'PROXIMA CENTAURI · SIRIUS · 4–12 LIGHT-YEARS AWAY',        color:'#BBDDFF'},
-  {id:'stellar_nbhd',minR:2500, maxR:6000,  title:'The Stellar Neighborhood',sub:'THOUSANDS OF STARS WITHIN 100 LIGHT-YEARS',             color:'#CCDDF5'},
-  {id:'orion_arm',  minR:6000,  maxR:13000, title:'The Orion Arm',        sub:'OUR SPIRAL ARM · 10,000 LIGHT-YEARS WIDE',                 color:'#FFD080'},
-  {id:'milky_way',  minR:13000, maxR:99999, title:'The Milky Way Galaxy', sub:'100,000 LIGHT-YEARS · ~300 BILLION STARS',                 color:'#FFE8AA'},
+  {id:'earth',       minR:0,     maxR:14,    title:'Earth',                sub:'THE BLUE MARBLE · 6,371 KM RADIUS',                         color:'#4499FF',desc:'Our living planet — the only world known to harbour life.'},
+  {id:'moon',        minR:14,    maxR:45,    title:'The Earth–Moon System', sub:'384,400 KM BETWEEN WORLDS',                                 color:'#AABBCC',desc:'Two worlds locked in a gravitational embrace for 4.5 billion years.'},
+  {id:'inner_ss',    minR:45,    maxR:150,   title:'The Inner Solar System',sub:'MERCURY TO MARS · SUN AT THE CENTRE',                     color:'#FFB844',desc:'Four rocky worlds forged in the heat of the early solar system.'},
+  {id:'outer_ss',    minR:150,   maxR:380,   title:'The Outer Solar System',sub:'JUPITER TO NEPTUNE · 30 AU FROM THE SUN',                 color:'#88AACC',desc:'Gas and ice giants ruling the cold expanse beyond the asteroid belt.'},
+  {id:'oort',        minR:380,   maxR:900,   title:'The Oort Cloud',        sub:'THE SOLAR SYSTEM\'S OUTER SHELL · ~100,000 AU ACROSS',     color:'#8899BB',desc:'A vast shell of icy bodies — the birthplace of long-period comets.'},
+  {id:'near_stars',  minR:900,   maxR:2500,  title:'Nearby Star Systems',   sub:'PROXIMA CENTAURI · SIRIUS · 4–12 LIGHT-YEARS AWAY',        color:'#BBDDFF',desc:'Our stellar neighbours — scattered suns in the immensity of space.'},
+  {id:'stellar_nbhd',minR:2500,  maxR:6000,  title:'The Stellar Neighborhood',sub:'THOUSANDS OF STARS WITHIN 100 LIGHT-YEARS',             color:'#CCDDF5',desc:'Thousands of stars visible with the naked eye — a tiny speck of the galaxy.'},
+  {id:'orion_arm',   minR:6000,  maxR:13000, title:'The Orion Arm',         sub:'OUR SPIRAL ARM · 10,000 LIGHT-YEARS WIDE',                 color:'#FFD080',desc:'One of the minor spiral arms of the Milky Way — our cosmic neighbourhood.'},
+  {id:'milky_way',   minR:13000, maxR:99999, title:'The Milky Way Galaxy',  sub:'100,000 LIGHT-YEARS · ~300 BILLION STARS',                 color:'#FFE8AA',desc:'Our home galaxy — one of trillions scattered across the observable universe.'},
 ];
 
 /* ── Planet data ────────────────────────────────────────────── */
@@ -117,6 +117,7 @@ export class SolarSystem3D{
     this._buildLoadScreen();
     this._loadTextures().then(tex=>{
       this._fadeLoadScreen();
+      this._buildProceduralTextures();
       this._buildScene(tex);
       this._buildUI();
       this._attachEvents();
@@ -516,13 +517,92 @@ export class SolarSystem3D{
     this.scene.add(new THREE.Points(geo,mat));
   }
 
+  /* ── Procedural Planet Textures ──────────────────────────── */
+  /* Canvas-drawn fallback textures — beautiful even without CDN.  */
+  _buildProceduralTextures(){
+    const mT=(fn)=>{const cv=document.createElement('canvas');cv.width=512;cv.height=256;fn(cv.getContext('2d'),512,256);const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;return t;};
+    this._procTex={};
+    /* EARTH: blue oceans, green landmasses, ice caps, cloud wisps */
+    this._procTex.earth=mT((g,W,H)=>{
+      g.fillStyle='#1565a0';g.fillRect(0,0,W,H);
+      [[65,58,90,62],[140,48,42,32],[195,72,58,58],[250,58,82,62],[290,52,42,28],
+       [298,82,62,52],[362,50,68,58],[392,82,58,52],[328,102,52,40]].forEach(([x,y,w,h])=>{
+        g.save();g.translate(x,y);g.scale(1,.7);g.beginPath();g.ellipse(0,0,w,h,0,0,Math.PI*2);
+        g.fillStyle='#2d6e28';g.fill();g.restore();});
+      [[285,86,26,18],[328,88,22,16],[358,68,20,14]].forEach(([x,y,w,h])=>{
+        g.save();g.translate(x,y);g.beginPath();g.ellipse(0,0,w,h,0,0,Math.PI*2);g.fillStyle='#7a6240';g.fill();g.restore();});
+      let grd=g.createLinearGradient(0,0,0,38);grd.addColorStop(0,'rgba(235,248,255,.96)');grd.addColorStop(1,'rgba(200,225,255,0)');g.fillStyle=grd;g.fillRect(0,0,W,38);
+      grd=g.createLinearGradient(0,H-34,0,H);grd.addColorStop(0,'rgba(200,225,255,0)');grd.addColorStop(1,'rgba(235,248,255,.95)');g.fillStyle=grd;g.fillRect(0,H-34,W,34);
+      for(let i=0;i<220;i++){const x=Math.random()*W,y=Math.random()*H,l=12+Math.random()*52;g.fillStyle='rgba(255,255,255,0.055)';g.beginPath();g.ellipse(x,y,l,l*.22,Math.random()*Math.PI,0,Math.PI*2);g.fill();}
+    });
+    /* MARS: red craters, Valles Marineris canyon, polar caps */
+    this._procTex.mars=mT((g,W,H)=>{
+      g.fillStyle='#8b3520';g.fillRect(0,0,W,H);
+      for(let i=0;i<145;i++){const x=Math.random()*W,y=Math.random()*H,r=3+Math.random()*40;g.beginPath();g.ellipse(x,y,r,r*.7,0,0,Math.PI*2);g.fillStyle=Math.random()>.5?'rgba(172,76,42,.28)':'rgba(48,12,7,.22)';g.fill();}
+      g.fillStyle='rgba(28,7,3,.50)';g.beginPath();g.ellipse(215,H/2,112,8,0,0,Math.PI*2);g.fill();
+      g.fillStyle='rgba(195,92,62,.38)';g.beginPath();g.arc(82,128,44,0,Math.PI*2);g.fill();
+      let grd=g.createLinearGradient(0,0,0,28);grd.addColorStop(0,'rgba(238,238,215,.94)');grd.addColorStop(1,'rgba(200,200,178,0)');g.fillStyle=grd;g.fillRect(0,0,W,28);
+      grd=g.createLinearGradient(0,H-22,0,H);grd.addColorStop(0,'rgba(200,200,178,0)');grd.addColorStop(1,'rgba(238,238,215,.72)');g.fillStyle=grd;g.fillRect(0,H-22,W,22);
+    });
+    /* JUPITER: iconic colored bands + Great Red Spot */
+    this._procTex.jupiter=mT((g,W,H)=>{
+      g.fillStyle='#C8A870';g.fillRect(0,0,W,H);
+      [[0,24,'#8B6040'],[24,52,'#D4B080'],[52,78,'#7A4E2A'],[78,104,'#E0C090'],
+       [104,120,'#A07050'],[120,136,'#C8A870'],[136,152,'#D4B080'],
+       [152,178,'#8B6040'],[178,202,'#D4B080'],[202,228,'#7A4E2A'],[228,256,'#C8A870']
+      ].forEach(([y1,y2,c])=>{g.fillStyle=c;g.fillRect(0,y1,W,y2-y1);});
+      for(let y=10;y<H;y+=14){for(let x=0;x<W;x+=4){g.fillStyle='rgba(0,0,0,.05)';g.fillRect(x,y+Math.sin(x*.042+y*.12)*2.8,3,1);}}
+      g.save();g.translate(W*.7,H*.6);g.scale(1,.52);
+      const grs=g.createRadialGradient(0,0,0,0,0,26);
+      grs.addColorStop(0,'rgba(172,52,32,.90)');grs.addColorStop(.55,'rgba(152,42,26,.56)');grs.addColorStop(1,'rgba(138,38,22,0)');
+      g.fillStyle=grs;g.beginPath();g.arc(0,0,28,0,Math.PI*2);g.fill();g.restore();
+    });
+    /* VENUS: swirling yellowish cloud deck */
+    this._procTex.venus=mT((g,W,H)=>{
+      g.fillStyle='#E0B845';g.fillRect(0,0,W,H);
+      for(let i=0;i<92;i++){const x=Math.random()*W,y=Math.random()*H,r=22+Math.random()*72;
+        const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(255,212,88,.20)');gr.addColorStop(1,'rgba(182,138,18,0)');
+        g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}
+    });
+    /* SATURN: subtle pale bands */
+    this._procTex.saturn=mT((g,W,H)=>{
+      g.fillStyle='#E8D5A0';g.fillRect(0,0,W,H);
+      [[0,38,'#D4C090'],[38,78,'#ECD8A8'],[78,118,'#D8C898'],[118,138,'#E8D5A0'],
+       [138,178,'#D8C898'],[178,218,'#ECD8A8'],[218,256,'#D4C090']].forEach(([y1,y2,c])=>{g.fillStyle=c;g.fillRect(0,y1,W,y2-y1);});
+    });
+    /* MERCURY: grey cratered surface */
+    this._procTex.mercury=mT((g,W,H)=>{
+      g.fillStyle='#5E5A52';g.fillRect(0,0,W,H);
+      for(let i=0;i<225;i++){const x=Math.random()*W,y=Math.random()*H,r=1.5+Math.random()*16;g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.fillStyle=Math.random()>.5?`rgba(38,35,30,${.25+Math.random()*.42})`:`rgba(138,133,122,${.18+Math.random()*.28})`;g.fill();}
+    });
+    /* URANUS: pale cyan gradient */
+    this._procTex.uranus=mT((g,W,H)=>{
+      const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#9EE8E8');gr.addColorStop(.5,'#80D8D8');gr.addColorStop(1,'#68C2C2');g.fillStyle=gr;g.fillRect(0,0,W,H);
+      for(let y=0;y<H;y+=22){g.fillStyle='rgba(120,220,220,.10)';g.fillRect(0,y,W,9);}
+    });
+    /* NEPTUNE: deep blue with Great Dark Spot */
+    this._procTex.neptune=mT((g,W,H)=>{
+      const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#1A3A9A');gr.addColorStop(.4,'#2855BB');gr.addColorStop(1,'#0E2678');g.fillStyle=gr;g.fillRect(0,0,W,H);
+      g.save();g.translate(W*.35,H*.5);const s=g.createRadialGradient(0,0,0,0,0,32);s.addColorStop(0,'rgba(78,108,198,.44)');s.addColorStop(1,'rgba(38,68,172,0)');g.scale(1,.48);g.fillStyle=s;g.beginPath();g.arc(0,0,36,0,Math.PI*2);g.fill();g.restore();
+      for(let y=0;y<H;y+=18){g.fillStyle='rgba(48,88,192,.14)';g.fillRect(0,y,W,7);}
+    });
+    /* PLUTO: tan surface with Tombaugh Regio heart */
+    this._procTex.pluto=mT((g,W,H)=>{
+      g.fillStyle='#7A6448';g.fillRect(0,0,W,H);
+      for(let i=0;i<92;i++){const x=Math.random()*W,y=Math.random()*H,r=5+Math.random()*26;g.beginPath();g.ellipse(x,y,r,r*.7,0,0,Math.PI*2);g.fillStyle=`rgba(${88+Math.floor(Math.random()*65)},${65+Math.floor(Math.random()*38)},${40+Math.floor(Math.random()*28)},.30)`;g.fill();}
+      g.fillStyle='rgba(192,180,150,.60)';g.beginPath();g.ellipse(W*.55,H*.5,62,50,0,0,Math.PI*2);g.fill();
+    });
+  }
+
   /* ── Planet ──────────────────────────────────────────────── */
   _buildPlanet(data,idx,tex){
     const pts=[];for(let i=0;i<=130;i++)pts.push(new THREE.Vector3(Math.cos(i/130*Math.PI*2)*data.orbitR,0,Math.sin(i/130*Math.PI*2)*data.orbitR));
-    this.scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.05})));
-    const pT=tex[data.id];if(pT)pT.colorSpace=THREE.SRGBColorSpace;
-    const mat=new THREE.MeshBasicMaterial({map:pT||null,color:pT?0xffffff:0x888888});
-    const mesh=new THREE.Mesh(new THREE.SphereGeometry(data.radius,52,52),mat);
+    this.scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.06})));
+    /* Use real texture if loaded, else fall back to procedural canvas texture */
+    const pT=tex[data.id]||this._procTex?.[data.id];
+    if(pT)pT.colorSpace=THREE.SRGBColorSpace;
+    const mat=new THREE.MeshStandardMaterial({map:pT||null,color:pT?0xffffff:0x888888,roughness:0.85,metalness:0.0});
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(data.radius,64,64),mat);
     if(data.atmoColor)mesh.add(new THREE.Mesh(new THREE.SphereGeometry(data.radius*(data.id==='venus'?1.15:1.12),32,32),makeAtmoMat(data.atmoColor,data.aC||0.55,data.aP||4.0)));
     if(data.id==='earth'&&tex.earth_lights){
       tex.earth_lights.colorSpace=THREE.SRGBColorSpace;
@@ -657,15 +737,24 @@ export class SolarSystem3D{
   _buildNarrativeCaption(){
     const el=document.createElement('div');
     Object.assign(el.style,{
-      position:'fixed',left:'50%',bottom:'8.5rem',transform:'translateX(-50%)',
+      position:'fixed',left:'50%',bottom:'9rem',
+      transform:'translateX(-50%) translateY(14px)',
       zIndex:'708',textAlign:'center',pointerEvents:'none',opacity:'0',
-      transition:'opacity 1.1s ease',fontFamily:'"Space Grotesk",sans-serif',
+      transition:'opacity 0.85s ease, transform 0.85s ease',
+      fontFamily:'"Space Grotesk",sans-serif',width:'min(560px,90vw)',
     });
-    el.innerHTML=`
-      <div id="nar-t" style="font-size:clamp(1rem,2.5vw,1.65rem);font-weight:700;letter-spacing:0.04em;text-shadow:0 0 50px currentColor;line-height:1.1"></div>
-      <div id="nar-s" style="font-size:9.5px;letter-spacing:0.28em;opacity:0.5;margin-top:0.4rem;font-family:'JetBrains Mono',monospace"></div>`;
+    el.innerHTML=
+      '<div id="nar-acc" style="width:32px;height:2px;background:currentColor;margin:0 auto 0.8rem;opacity:0.7;border-radius:2px;transition:width 0.55s ease"></div>'+
+      '<div id="nar-t" style="font-size:clamp(1.6rem,3.2vw,2.55rem);font-weight:800;letter-spacing:0.015em;line-height:1.05;text-shadow:0 0 60px currentColor,0 2px 28px rgba(0,0,0,0.85)"></div>'+
+      '<div id="nar-s" style="font-size:9px;letter-spacing:0.30em;opacity:0.48;margin-top:0.55rem;font-family:\'JetBrains Mono\',monospace"></div>'+
+      '<div id="nar-d" style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.36);margin-top:0.5rem;font-weight:400"></div>'+
+      '<div id="nar-acc2" style="width:28px;height:1px;background:currentColor;margin:0.75rem auto 0;opacity:0.25;border-radius:2px"></div>';
     this.container.appendChild(el);
-    this._narEl=el;this._narT=el.querySelector('#nar-t');this._narS=el.querySelector('#nar-s');
+    this._narEl=el;
+    this._narT  =el.querySelector('#nar-t');
+    this._narS  =el.querySelector('#nar-s');
+    this._narD  =el.querySelector('#nar-d');
+    this._narAcc=el.querySelector('#nar-acc');
     this._narZoneId=null;
   }
 
@@ -673,18 +762,23 @@ export class SolarSystem3D{
     if(!this._narEl||!this._introDone)return;
     const r=this._camR;
     const zone=ZONES.find(z=>r>=z.minR&&r<z.maxR)||null;
-    if(!zone){this._narEl.style.opacity='0';return;}
+    if(!zone){this._narEl.style.opacity='0';this._narEl.style.transform='translateX(-50%) translateY(12px)';return;}
     if(zone.id===this._narZoneId)return;
     this._narZoneId=zone.id;
-    /* Fade out → update → fade in */
+    /* Slide out */
     this._narEl.style.opacity='0';
+    this._narEl.style.transform='translateX(-50%) translateY(12px)';
     clearTimeout(this._narTimeout);
     this._narTimeout=setTimeout(()=>{
+      this._narEl.style.color=zone.color;
       this._narT.textContent=zone.title;
-      this._narT.style.color=zone.color;
       this._narS.textContent=zone.sub;
+      if(this._narD)this._narD.textContent=zone.desc||'';
+      if(this._narAcc)this._narAcc.style.width=Math.min(zone.title.length*4,72)+'px';
+      /* Slide in */
       this._narEl.style.opacity='1';
-    },600);
+      this._narEl.style.transform='translateX(-50%) translateY(0)';
+    },580);
   }
 
   /* ── Distance counter ────────────────────────────────────── */
