@@ -22,7 +22,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 const ATMO_V=`varying vec3 vN,vVP;void main(){vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.);vVP=-mv.xyz;gl_Position=projectionMatrix*mv;}`;
 const ATMO_F=`uniform vec3 gc;uniform float co,pw;varying vec3 vN,vVP;void main(){float r=1.-abs(dot(normalize(vVP),vN));float i=co*pow(clamp(r,0.,1.),pw);gl_FragColor=vec4(gc,clamp(i,0.,1.));}`;
 function makeAtmoMat(c,co=0.55,pw=4.){return new THREE.ShaderMaterial({uniforms:{gc:{value:new THREE.Color(c)},co:{value:co},pw:{value:pw}},vertexShader:ATMO_V,fragmentShader:ATMO_F,side:THREE.FrontSide,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false});}
-function makeGlowTex(c){const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d'),gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,c+'ff');gr.addColorStop(0.3,c+'55');gr.addColorStop(0.7,c+'11');gr.addColorStop(1,'transparent');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(cv);}
+function makeGlowTex(c){const col=c||'#ffffff';const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d'),gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,col+'ff');gr.addColorStop(0.3,col+'55');gr.addColorStop(0.7,col+'11');gr.addColorStop(1,'transparent');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(cv);}
 const easeOutQuart=t=>1-Math.pow(1-t,4);
 const lerp=(a,b,t)=>a+(b-a)*t;
 
@@ -62,7 +62,7 @@ const PLANETS=[
   {id:'neptune',radius:1.65,orbitR:63,speed:0.00006,tilt:28.3,atmoColor:'#4466DD',aC:0.75,aP:3.0},
   {id:'pluto',  radius:0.19,orbitR:80,speed:0.00004,tilt:122.5,atmoColor:null},
 ];
-const GLOW=['#B0B0A8','#E8C56B','#2E8FF5','#C1440E','#C8A87A','#E4D5A0','#7DE8E8','#4060D8'];
+const GLOW=['#B0B0A8','#E8C56B','#2E8FF5','#C1440E','#C8A87A','#E4D5A0','#7DE8E8','#4060D8','#C8C0B8'];
 const NEARBY_STARS=[
   {name:'Proxima Centauri',pos:new THREE.Vector3(560,80,-380), color:0xFF6644,r:0.7,ly:'4.24 ly'},
   {name:'Alpha Centauri A', pos:new THREE.Vector3(540,95,-370),color:0xFFEEB0,r:0.9,ly:'4.37 ly'},
