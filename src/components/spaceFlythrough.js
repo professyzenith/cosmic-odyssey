@@ -92,6 +92,7 @@ export class SolarSystem3D{
     /* LOD material refs */
     this._stellarNeighMat=null; this._orionArmMat=null;
     this._orionNebMats=[]; this._galaxyDiscMat=null;
+    this._galHazeMat=null; this._galBandMat=null;
   }
 
   /* ── INIT ─────────────────────────────────────────────────── */
@@ -155,7 +156,8 @@ export class SolarSystem3D{
     /* Deferred heavy builds to not block first frame */
     setTimeout(()=>{ try{this._buildStellarNeighborhood();}catch(e){} }, 100);
     setTimeout(()=>{ try{this._buildOrionArm();}catch(e){} }, 400);
-    setTimeout(()=>{ try{this._buildGalaxyDisc();}catch(e){} }, 800);
+    setTimeout(()=>{ try{this._buildGalacticHaze();}catch(e){} }, 800);
+    setTimeout(()=>{ try{this._buildGalaxyDisc();}catch(e){} }, 1400);
   }
 
   /* ── Skybox ──────────────────────────────────────────────── */
@@ -250,8 +252,61 @@ export class SolarSystem3D{
     });
   }
 
+  /* ── Galactic Interior Haze ──────────────────────────────── */
+  /* Phase 3: Milky Way interior glow seen from WITHIN.        */
+  /* Camera 1800-7000 units. Bridges Orion Arm → Galaxy Disc.  */
+  _buildGalacticHaze(){
+    /* ── 22k star particles: flattened hot cloud (galactic disc interior) */
+    const N=22000,P=new Float32Array(N*3),C=new Float32Array(N*3);
+    for(let i=0;i<N;i++){
+      const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+      const r=900+Math.pow(Math.random(),0.45)*9100;
+      /* Very flat — compressed to galactic disc plane */
+      P[i*3]=r*Math.sin(ph)*Math.cos(th);
+      P[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.09;
+      P[i*3+2]=r*Math.cos(ph);
+      /* Warm orange/yellow core, cool blue rim — galactic bulge vs disc arms */
+      const d=Math.min(1,r/8000);
+      const br=0.16+Math.random()*0.44;
+      C[i*3]  =(0.74+0.26*(1-d))*br;
+      C[i*3+1]=(0.64+0.16*(1-d))*br;
+      C[i*3+2]=(0.48+0.52*d)*br;
+    }
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(P,3));
+    geo.setAttribute('color',   new THREE.BufferAttribute(C,3));
+    const mat=new THREE.PointsMaterial({
+      size:8,vertexColors:true,transparent:true,opacity:0,
+      depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending
+    });
+    this.scene.add(new THREE.Points(geo,mat));
+    this._galHazeMat=mat;
+
+    /* ── Galactic equator band: 8k bright stars in a tight ring  */
+    /* Like looking along the Milky Way band from a dark-sky site */
+    const N2=8000,P2=new Float32Array(N2*3),C2=new Float32Array(N2*3);
+    for(let i=0;i<N2;i++){
+      const a=Math.random()*Math.PI*2;
+      const r=1200+Math.random()*8800;
+      /* Very thin disc — y spread is only 4% of radius */
+      const h=(Math.random()-.5)*r*0.038;
+      P2[i*3]=Math.cos(a)*r; P2[i*3+1]=h; P2[i*3+2]=Math.sin(a)*r;
+      const br=0.3+Math.random()*0.58;
+      C2[i*3]=br*0.96; C2[i*3+1]=br*0.87; C2[i*3+2]=br*0.68;
+    }
+    const geo2=new THREE.BufferGeometry();
+    geo2.setAttribute('position',new THREE.BufferAttribute(P2,3));
+    geo2.setAttribute('color',   new THREE.BufferAttribute(C2,3));
+    const mat2=new THREE.PointsMaterial({
+      size:11,vertexColors:true,transparent:true,opacity:0,
+      depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending
+    });
+    this.scene.add(new THREE.Points(geo2,mat2));
+    this._galBandMat=mat2;
+  }
+
   /* ── Galaxy Disc ─────────────────────────────────────────── */
-  /* 2048px canvas spiral galaxy, fades in from 150 camera units */
+  /* Phase 4: 2048px canvas spiral, fades in from 5000 units.  */
   _buildGalaxyDisc(){
     const SZ=2048,CX=SZ/2,CY=SZ/2,HR=SZ*0.476;
     const canvas=document.createElement('canvas');canvas.width=canvas.height=SZ;
@@ -768,22 +823,43 @@ export class SolarSystem3D{
   }
   _updateTour(dt){if(!this._touring||!this._introDone)return;this._tourTimer-=dt;if(this._tourTimer<=0){this._focusPlanet(this.objects[this._tourIdx%this.objects.length]);this._tourTimer=6;this._tourIdx++;}}
 
-  /* ── LOD opacity manager ─────────────────────────────────── */
+  /* ── LOD opacity manager — 4 distinct phases ────────────── */
   _updateLOD(){
     const r=this._camR;
-    /* Stellar neighborhood: fade 400→1500 */
-    if(this._stellarNeighMat)this._stellarNeighMat.opacity=Math.min(0.88,Math.max(0,(r-400)/1100));
-    /* Orion arm: fade 700→3500 */
-    if(this._orionArmMat)this._orionArmMat.opacity=Math.min(0.72,Math.max(0,(r-700)/2800));
-    this._orionNebMats.forEach(m=>{m.opacity=Math.min(0.55,Math.max(0,(r-700)/2800));});
-    /* Galaxy disc: fade 120→600 */
-    if(this._galaxyDiscMat)this._galaxyDiscMat.opacity=Math.min(0.88,Math.max(0,(r-120)/480));
-    /* "You are here" dot: fade 600→1200 */
-    if(this._ourPosSpr)this._ourPosSpr.material.opacity=Math.min(0.9,Math.max(0,(r-600)/600));
-    /* Slow-rotate galaxy disc */
-    if(this._galaxyDisc)this._galaxyDisc.rotation.z+=0.000015;
-    /* "You are here" pulse */
-    if(this._ourPosSpr&&r>600){const p=Math.sin(Date.now()*0.001)*0.12;this._ourPosSpr.scale.setScalar(55+p*8);}
+
+    /* PHASE 1 — Stellar Neighborhood (180→1200 units)
+       Thousands of individual nearby stars flood in. */
+    if(this._stellarNeighMat)
+      this._stellarNeighMat.opacity=Math.min(0.94,Math.max(0,(r-180)/1020));
+
+    /* PHASE 2 — Orion Arm + HII Nebulae (700→3500 units)
+       Dense river of stars; our spiral arm becomes visible. */
+    const orA=Math.min(0.82,Math.max(0,(r-700)/2800));
+    if(this._orionArmMat)this._orionArmMat.opacity=orA;
+    this._orionNebMats.forEach(m=>{m.opacity=Math.min(0.65,orA);});
+
+    /* PHASE 3 — Galactic Interior Haze (1800→7000 units)
+       Warm diffuse glow of the Milky Way seen from inside —
+       bridges Orion Arm and the face-on disc. */
+    if(this._galHazeMat)
+      this._galHazeMat.opacity=Math.min(0.72,Math.max(0,(r-1800)/5200));
+    /* Galactic equator band: bright ring along galactic plane */
+    if(this._galBandMat)
+      this._galBandMat.opacity=Math.min(0.58,Math.max(0,(r-1500)/4000));
+
+    /* PHASE 4 — Galaxy Disc face-on view (5000→11000 units)
+       Full spiral galaxy appears as you exit the Milky Way. */
+    if(this._galaxyDiscMat)
+      this._galaxyDiscMat.opacity=Math.min(0.90,Math.max(0,(r-5000)/6000));
+
+    /* "You are here" blue dot: galaxy scale only (6000+) */
+    if(this._ourPosSpr)
+      this._ourPosSpr.material.opacity=Math.min(0.9,Math.max(0,(r-6000)/3000));
+
+    /* Slowly rotate galaxy disc */
+    if(this._galaxyDisc)this._galaxyDisc.rotation.z+=0.000012;
+    /* Pulse "You are here" */
+    if(this._ourPosSpr&&r>6000){const p=Math.sin(Date.now()*0.0009);this._ourPosSpr.scale.setScalar(55+p*9);}
   }
 
   /* ── Comet ───────────────────────────────────────────────── */
