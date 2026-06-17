@@ -209,14 +209,14 @@ export class SolarSystem3D {
 
   /* ── Starfield skybox ───────────────────────────────────────── */
   _buildSkybox(tex){
-    const geo=new THREE.SphereGeometry(2000,32,16);
-    const mat=new THREE.MeshBasicMaterial({
-      map: tex.stars || null,
-      side:THREE.BackSide, depthWrite:false,
-    });
-    if(!tex.stars){
-      /* Fallback — dark gradient */
-      mat.color=new THREE.Color(0x000008);
+    const geo=new THREE.SphereGeometry(2000,64,32);
+    const mat=new THREE.MeshBasicMaterial({ side:THREE.BackSide, depthWrite:false });
+    if(tex.stars){
+      tex.stars.mapping = THREE.EquirectangularReflectionMapping;
+      tex.stars.colorSpace = THREE.SRGBColorSpace;
+      mat.map = tex.stars;
+    } else {
+      mat.color = new THREE.Color(0x000008);
     }
     this.scene.add(new THREE.Mesh(geo,mat));
   }
@@ -262,8 +262,10 @@ export class SolarSystem3D {
 
   /* ── Lights ─────────────────────────────────────────────────── */
   _buildLights(){
-    this.scene.add(new THREE.AmbientLight(0x050510,0.9));
-    const sl=new THREE.PointLight(0xFFF5CC,6.0,900,1.3); sl.position.set(0,0,0); this.scene.add(sl);
+    /* Strong ambient so all planets show texture regardless of sun distance */
+    this.scene.add(new THREE.AmbientLight(0x303348, 3.5));
+    /* Sun point light — mostly for bloom & close-up shadowing */
+    const sl=new THREE.PointLight(0xFFF5CC, 4.0, 0, 0); sl.position.set(0,0,0); this.scene.add(sl);
     this._sunLight=sl;
   }
 
@@ -297,9 +299,10 @@ export class SolarSystem3D {
     const pts=[]; for(let i=0;i<=130;i++) pts.push(new THREE.Vector3(Math.cos(i/130*Math.PI*2)*data.orbitR,0,Math.sin(i/130*Math.PI*2)*data.orbitR));
     this.scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.05})));
 
-    /* Mesh */
+    /* Mesh — MeshBasicMaterial so texture is always fully visible */
     const pTex=tex[data.id];
-    const mat=new THREE.MeshStandardMaterial({map:pTex||null,color:pTex?0xffffff:0x888888,roughness:0.82,metalness:0.04});
+    if(pTex){ pTex.colorSpace=THREE.SRGBColorSpace; }
+    const mat=new THREE.MeshBasicMaterial({map:pTex||null,color:pTex?0xffffff:0x888888});
     const mesh=new THREE.Mesh(new THREE.SphereGeometry(data.radius,48,48),mat);
     mesh.castShadow=false;
 
@@ -348,8 +351,9 @@ export class SolarSystem3D {
     let moon=null;
     if(data.hasMoon){
       const moonTex=tex.moon||null;
+      if(moonTex) moonTex.colorSpace=THREE.SRGBColorSpace;
       const moonMesh=new THREE.Mesh(new THREE.SphereGeometry(0.27,24,24),
-        new THREE.MeshStandardMaterial({map:moonTex||null,roughness:0.96,metalness:0.0,color:moonTex?0xffffff:0x888880}));
+        new THREE.MeshBasicMaterial({map:moonTex||null,color:moonTex?0xffffff:0x888880}));
       const moonPivot=new THREE.Object3D(); moonMesh.position.x=1.85; moonPivot.add(moonMesh);
       mesh.add(moonPivot); moon={mesh:moonMesh,pivot:moonPivot};
     }
