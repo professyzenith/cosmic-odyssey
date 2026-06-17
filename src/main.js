@@ -10,6 +10,7 @@ import { AmbientAudio } from './components/ambientAudio.js';
 import { NASAGallery } from './components/gallery.js';
 import { PlanetSounds } from './components/planetSounds.js';
 import { buildEducation } from './components/education.js';
+import { SpaceFlythrough } from './components/spaceFlythrough.js';
 import { PLANETS, MISSIONS, SOLAR_SYSTEM_FACTS } from './data/planets.js';
 
 // ── Loading Screen ──────────────────────────────────────────
@@ -765,32 +766,64 @@ function initIntro() {
   const main   = document.getElementById('main-site');
   const navbar = document.getElementById('navbar');
 
-  // Enable pointer events on buttons after fade-in animation completes (1.4s delay + 1s duration)
+  // Enable CTA buttons after animations settle
   const cta = intro?.querySelector('.intro-cta');
-  if (cta) {
-    setTimeout(() => cta.classList.add('ready'), 2500);
-  }
+  if (cta) setTimeout(() => cta.classList.add('ready'), 2500);
 
   let galleryInited = false;
   function initGalleryOnce() {
     if (galleryInited) return;
     galleryInited = true;
-    const galleryContainer = document.getElementById('gallery-container');
-    if (galleryContainer) {
-      try { new NASAGallery(galleryContainer); } catch (e) { console.warn('Gallery init:', e); }
-    }
+    const gc = document.getElementById('gallery-container');
+    if (gc) try { new NASAGallery(gc); } catch (e) { console.warn('Gallery:', e); }
   }
 
+  let launched = false;
+
   function launch() {
-    intro.classList.add('exit');
+    if (launched) return;
+    launched = true;
     initGalleryOnce();
-    setTimeout(() => {
-      intro.style.display = 'none';
+
+    // ── Build the flythrough canvas ──
+    const ftCanvas = document.createElement('canvas');
+    Object.assign(ftCanvas.style, {
+      position:  'fixed',
+      inset:     '0',
+      zIndex:    '600',
+      width:     '100vw',
+      height:    '100vh',
+      opacity:   '0',
+      transition:'opacity 0.6s ease',
+    });
+    document.body.appendChild(ftCanvas);
+
+    // Fade intro out, fade flythrough in
+    intro.classList.add('exit');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        ftCanvas.style.opacity = '1';
+      });
+    });
+
+    const flythrough = new SpaceFlythrough(ftCanvas, () => {
+      // Flythrough done — restore scroll and reveal main site
+      document.body.style.overflow = '';
       main.classList.add('visible');
       navbar.classList.add('visible');
       initHeroSolar();
-      document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
-    }, 1200);
+      setTimeout(() => {
+        intro.style.display = 'none';
+        ftCanvas.remove();
+      }, 400);
+    });
+
+    // Start after intro begins fading
+    setTimeout(() => {
+      flythrough.start();
+      // Disable page scroll during flythrough so only wheel drives warp
+      document.body.style.overflow = 'hidden';
+    }, 500);
   }
 
   document.getElementById('begin-btn')?.addEventListener('click', launch);
@@ -798,8 +831,18 @@ function initIntro() {
     launch();
     setTimeout(() => {
       document.getElementById('planets-container')?.scrollIntoView({ behavior: 'smooth' });
-    }, 1500);
+    }, 5000); // wait for flythrough to finish first
   });
+
+  // Also trigger on scroll while intro is visible
+  let scrollTriggered = false;
+  window.addEventListener('wheel', (e) => {
+    if (launched || scrollTriggered) return;
+    if (e.deltaY > 0) {
+      scrollTriggered = true;
+      launch();
+    }
+  }, { passive: true });
 }
 
 // ── Ambient Audio — Violin music + tiny on/off button ────────
