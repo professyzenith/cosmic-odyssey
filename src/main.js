@@ -10,7 +10,7 @@ import { AmbientAudio } from './components/ambientAudio.js';
 import { NASAGallery } from './components/gallery.js';
 import { PlanetSounds } from './components/planetSounds.js';
 import { buildEducation } from './components/education.js';
-import { SpaceFlythrough } from './components/spaceFlythrough.js';
+import { SolarSystem3D } from './components/spaceFlythrough.js';
 import { PLANETS, MISSIONS, SOLAR_SYSTEM_FACTS } from './data/planets.js';
 
 // ── Loading Screen ──────────────────────────────────────────
@@ -780,50 +780,29 @@ function initIntro() {
 
   let launched = false;
 
+  /* Called when 3D experience ends (skip or auto) */
+  function revealSite() {
+    document.body.style.overflow = '';
+    main.classList.add('visible');
+    navbar.classList.add('visible');
+    initHeroSolar();
+    initGalleryOnce();
+    intro.style.display = 'none';
+  }
+
   function launch() {
     if (launched) return;
     launched = true;
-    initGalleryOnce();
 
-    // ── Build the flythrough canvas ──
-    const ftCanvas = document.createElement('canvas');
-    Object.assign(ftCanvas.style, {
-      position:  'fixed',
-      inset:     '0',
-      zIndex:    '600',
-      width:     '100vw',
-      height:    '100vh',
-      opacity:   '0',
-      transition:'opacity 0.6s ease',
-    });
-    document.body.appendChild(ftCanvas);
-
-    // Fade intro out, fade flythrough in
+    /* Fade out intro screen */
     intro.classList.add('exit');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        ftCanvas.style.opacity = '1';
-      });
-    });
+    document.body.style.overflow = 'hidden';
 
-    const flythrough = new SpaceFlythrough(ftCanvas, () => {
-      // Flythrough done — restore scroll and reveal main site
-      document.body.style.overflow = '';
-      main.classList.add('visible');
-      navbar.classList.add('visible');
-      initHeroSolar();
-      setTimeout(() => {
-        intro.style.display = 'none';
-        ftCanvas.remove();
-      }, 400);
-    });
+    /* Build 3D solar system scene */
+    const ss3d = new SolarSystem3D(document.body, revealSite);
+    ss3d.init();
 
-    // Start after intro begins fading
-    setTimeout(() => {
-      flythrough.start();
-      // Disable page scroll during flythrough so only wheel drives warp
-      document.body.style.overflow = 'hidden';
-    }, 500);
+    setTimeout(() => ss3d.start(), 300);
   }
 
   document.getElementById('begin-btn')?.addEventListener('click', launch);
@@ -831,17 +810,14 @@ function initIntro() {
     launch();
     setTimeout(() => {
       document.getElementById('planets-container')?.scrollIntoView({ behavior: 'smooth' });
-    }, 5000); // wait for flythrough to finish first
+    }, 1000);
   });
 
-  // Also trigger on scroll while intro is visible
+  /* Trigger on first downward scroll while intro is visible */
   let scrollTriggered = false;
   window.addEventListener('wheel', (e) => {
     if (launched || scrollTriggered) return;
-    if (e.deltaY > 0) {
-      scrollTriggered = true;
-      launch();
-    }
+    if (e.deltaY > 0) { scrollTriggered = true; launch(); }
   }, { passive: true });
 }
 

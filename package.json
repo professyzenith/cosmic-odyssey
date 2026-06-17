@@ -12,7 +12,16 @@
   "devDependencies": {
     "vite": "^5.0.0"
   },
-  "keywords": ["solar-system", "space", "three.js", "astronomy", "NASA"],
+  "keywords": [
+    "solar-system",
+    "space",
+    "three.js",
+    "astronomy",
+    "NASA"
+  ],
   "author": "Cosmic Odyssey",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.184.0"
+  }
 }
