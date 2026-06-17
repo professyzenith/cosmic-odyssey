@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Odyssey — Welcome To The Imaginary World</title>
+  <meta name="description" content="An immersive journey through our Solar System. Explore all 8 planets, space missions, and the cosmos in breathtaking 3D."/>
+  <meta name="keywords" content="solar system, planets, space, NASA, astronomy, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune"/>
+  <meta name="author" content="Cosmic Odyssey"/>
+  <meta property="og:title" content="Cosmic Odyssey — Welcome To The Imaginary World"/>
+  <meta property="og:description" content="An immersive journey through our Solar System. Explore 8 planets, missions, and real-time 3D simulations."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://cosmic-odyssey.space"/>
+  <meta property="og:image" content="/og-image.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Cosmic Odyssey — Solar System Explorer"/>
+  <meta name="twitter:description" content="Explore the Solar System like never before. 8 planets, real missions, live 3D model."/>
+  <meta name="theme-color" content="#02030A"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/src/styles/main.css"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Cosmic Odyssey",
+    "description": "Interactive Solar System Explorer — 8 Planets, Space Missions, Live 3D Model",
+    "url": "https://cosmic-odyssey.space"
+  }
+  </script>
+</head>
+<body>
+  <div id="loading-screen" role="status" aria-label="Loading Cosmic Odyssey">
+    <div class="loading-logo" aria-hidden="true">✦ COSMIC ODYSSEY</div>
+    <div class="loading-bar-wrap" aria-hidden="true">
+      <div class="loading-bar" id="loading-bar"></div>
+    </div>
+    <p class="loading-text" id="loading-text">Initializing...</p>
+  </div>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

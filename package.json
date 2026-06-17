@@ -1,0 +1,18 @@
+{
+  "name": "cosmic-odyssey",
+  "version": "1.0.0",
+  "description": "Cosmic Odyssey — Welcome To The Imaginary World of the Solar System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "keywords": ["solar-system", "space", "three.js", "astronomy", "NASA"],
+  "author": "Cosmic Odyssey",
+  "license": "MIT"
+}

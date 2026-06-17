@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#02030A"/>
+  <!-- Star ring -->
+  <circle cx="32" cy="32" r="18" fill="none" stroke="#6A5CFF" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"/>
+  <!-- Sun -->
+  <circle cx="32" cy="32" r="7" fill="#FFB820"/>
+  <circle cx="32" cy="32" r="5.5" fill="#FFE066"/>
+  <!-- Orbiting planet -->
+  <circle cx="32" cy="14" r="3" fill="#2E8FF5"/>
+  <!-- Saturn with ring -->
+  <ellipse cx="50" cy="32" rx="4.5" ry="1.2" fill="none" stroke="#E4D5A0" stroke-width="1.2" opacity="0.8"/>
+  <circle cx="50" cy="32" r="3" fill="#E4D5A0"/>
+  <!-- Sparkle -->
+  <text x="6" y="14" font-size="10" fill="#00E5FF" opacity="0.9">✦</text>
+</svg>
