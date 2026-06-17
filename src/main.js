@@ -1068,24 +1068,7 @@ async function boot() {
     const missionsGrid = document.getElementById('missions-grid');
     if (missionsGrid) ScrollAnimator.staggerReveal(missionsGrid, '.mission-card', 60);
 
-    try {
-      const sounds = new PlanetSounds();
-      const pst = document.createElement('button');
-      pst.id = 'planet-sound-toggle';
-      pst.setAttribute('aria-label', 'Toggle planet sounds');
-      pst.innerHTML = `<span style="font-size:13px">🔔</span><span style="font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase" id="pst-label">Planet Sounds On</span>`;
-      document.body.appendChild(pst);
-      pst.addEventListener('click', () => {
-        const enabled = sounds.toggle();
-        const icon  = pst.querySelector('span:first-child');
-        const label = document.getElementById('pst-label');
-        if (icon)  icon.textContent = enabled ? '🔔' : '🔕';
-        if (label) label.textContent = enabled ? 'Planet Sounds On' : 'Planet Sounds Off';
-        pst.style.borderColor = enabled
-          ? 'rgba(255,255,255,0.08)'
-          : 'rgba(255,107,107,0.25)';
-      });
-    } catch (e) { console.warn('PlanetSounds init:', e); }
+
 
     observeNewRevealElements();
   }, 200);
