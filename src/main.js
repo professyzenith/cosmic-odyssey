@@ -45,7 +45,7 @@ function buildDOM() {
   // Build intro
   document.getElementById('app').innerHTML = `
     <!-- INTRO -->
-    <div id="intro-screen" role="main" aria-label="Cosmic Odyssey Introduction">
+    <div id="intro-screen" role="region" aria-label="Cosmic Odyssey Introduction">
       <div id="intro-particles">
         <div class="intro-nebula" style="width:600px;height:600px;background:radial-gradient(circle,rgba(106,92,255,0.2),transparent);top:-10%;left:-5%"></div>
         <div class="intro-nebula" style="width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,0.15),transparent);bottom:-5%;right:5%;animation-delay:-4s"></div>

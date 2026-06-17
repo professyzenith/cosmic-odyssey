@@ -86,29 +86,28 @@ export class PlanetSearch {
     if (!q) {
       // Default: show all planets
       container.innerHTML = PLANETS.map(p => this._resultCard(p, '')).join('');
-      return;
+    } else {
+      const results = PLANETS.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.type.toLowerCase().includes(q) ||
+        p.overview.toLowerCase().includes(q) ||
+        p.funFact.toLowerCase().includes(q) ||
+        Object.values(p.stats).some(v => String(v).toLowerCase().includes(q)) ||
+        p.missions.some(m => m.toLowerCase().includes(q))
+      );
+
+      if (results.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);
+            font-family:'Space Grotesk',sans-serif;font-size:14px;">
+            No planets found for "${query}"
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = results.map(p => this._resultCard(p, q)).join('');
     }
-
-    const results = PLANETS.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.type.toLowerCase().includes(q) ||
-      p.overview.toLowerCase().includes(q) ||
-      p.funFact.toLowerCase().includes(q) ||
-      Object.values(p.stats).some(v => String(v).toLowerCase().includes(q)) ||
-      p.missions.some(m => m.toLowerCase().includes(q))
-    );
-
-    if (results.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);
-          font-family:'Space Grotesk',sans-serif;font-size:14px;">
-          No planets found for "${query}"
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = results.map(p => this._resultCard(p, q)).join('');
 
     // Bind clicks
     container.querySelectorAll('[data-planet-id]').forEach(card => {

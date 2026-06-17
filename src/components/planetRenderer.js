@@ -260,7 +260,7 @@ export class PlanetRenderer {
     ctx.globalAlpha = 0.15;
     for (let i = 0; i < 12; i++) {
       const angle = (i / 12) * Math.PI * 2 + shift * 0.005;
-      const rr = R * (0.3 + 0.6 * Math.random());
+      const rr = R * (0.3 + 0.6 * (Math.sin(i * 1.5) * 0.5 + 0.5));
       const ix = CX + Math.cos(angle) * rr;
       const iy = CY + Math.sin(angle) * rr;
       ctx.fillStyle = 'rgba(180,255,255,0.8)';
@@ -334,7 +334,7 @@ export class PlanetRenderer {
     ctx.fill();
   }
 
-  drawSaturnRings() {
+  drawSaturnRings(half = 'all') {
     if (this.planet.id !== 'saturn') return;
     const { ctx, CX, CY, R } = this;
     ctx.save();
@@ -355,7 +355,17 @@ export class PlanetRenderer {
       ctx.strokeStyle = rGrd;
       ctx.lineWidth = ring.w * 2;
       ctx.beginPath();
-      ctx.arc(0, 0, ring.r, 0, Math.PI * 2);
+      
+      let startAngle = 0;
+      let endAngle = Math.PI * 2;
+      if (half === 'back') {
+        startAngle = Math.PI;
+        endAngle = 2 * Math.PI;
+      } else if (half === 'front') {
+        startAngle = 0;
+        endAngle = Math.PI;
+      }
+      ctx.arc(0, 0, ring.r, startAngle, endAngle);
       ctx.stroke();
     });
     ctx.restore();
@@ -364,8 +374,9 @@ export class PlanetRenderer {
   frame() {
     const { ctx, W, H } = this;
     ctx.clearRect(0, 0, W, H);
-    this.drawSaturnRings();
+    this.drawSaturnRings('back');
     this.drawBase();
+    this.drawSaturnRings('front');
     this.drawAtmosphericGlow();
     this.t++;
     this.raf = requestAnimationFrame(() => this.frame());

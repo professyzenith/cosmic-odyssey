@@ -156,6 +156,21 @@ export class SolarSystemRenderer {
     ctx.fill();
     ctx.globalAlpha = 1;
 
+    // Saturn rings (back half)
+    if (p.id === 'saturn') {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.scale(1, 0.32);
+      [{ r: pr * 1.55, w: 3.5, a: 0.5 }, { r: pr * 1.9, w: 2.5, a: 0.35 }, { r: pr * 2.25, w: 2, a: 0.22 }].forEach(ring => {
+        ctx.strokeStyle = `rgba(228,213,160,${ring.a})`;
+        ctx.lineWidth = ring.w * scale;
+        ctx.beginPath();
+        ctx.arc(0, 0, ring.r, Math.PI, 2 * Math.PI);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
     // Planet body
     const bodyGrd = ctx.createRadialGradient(px - pr * 0.3, py - pr * 0.3, 0, px, py, pr);
     bodyGrd.addColorStop(0, this.lighten(p.color, 40));
@@ -166,7 +181,7 @@ export class SolarSystemRenderer {
     ctx.arc(px, py, pr, 0, Math.PI * 2);
     ctx.fill();
 
-    // Saturn rings
+    // Saturn rings (front half)
     if (p.id === 'saturn') {
       ctx.save();
       ctx.translate(px, py);
@@ -175,7 +190,7 @@ export class SolarSystemRenderer {
         ctx.strokeStyle = `rgba(228,213,160,${ring.a})`;
         ctx.lineWidth = ring.w * scale;
         ctx.beginPath();
-        ctx.arc(0, 0, ring.r, 0, Math.PI * 2);
+        ctx.arc(0, 0, ring.r, 0, Math.PI);
         ctx.stroke();
       });
       ctx.restore();
