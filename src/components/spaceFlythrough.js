@@ -49,6 +49,7 @@ const PLANET_INFO={
   saturn: {name:'Saturn', type:'Gas Giant',  radius:'58,232 km',distSun:'1.43B km',orbPeriod:'29.5 years',rotPeriod:'10.7 hours',temp:'-138°C',moons:146,desc:'Famous for its ring system spanning 282,000 km. Saturn is so light it could float on water.'},
   uranus: {name:'Uranus', type:'Ice Giant',  radius:'25,362 km',distSun:'2.87B km',orbPeriod:'84 years',rotPeriod:'17.2 hours',temp:'-195°C',moons:28,desc:'The coldest planetary atmosphere. Uranus rotates on its side with a 97.8° axial tilt.'},
   neptune:{name:'Neptune',type:'Ice Giant',  radius:'24,622 km',distSun:'4.50B km',orbPeriod:'165 years',rotPeriod:'16.1 hours',temp:'-200°C',moons:16,desc:'The windiest planet (2,100 km/h gusts). Predicted mathematically before it was first observed.'},
+  pluto:  {name:'Pluto',  type:'Dwarf',      radius:'1,188 km',distSun:'5.90B km',orbPeriod:'248 years',rotPeriod:'6.4 days',temp:'-229°C',moons:5,desc:'The enigmatic dwarf planet at the edge of the Kuiper Belt.'},
 };
 const PLANETS=[
   {id:'mercury',radius:0.40,orbitR:9, speed:0.041, tilt:0.03, atmoColor:'#996633',aC:0.18,aP:5.5},
@@ -59,6 +60,7 @@ const PLANETS=[
   {id:'saturn', radius:2.35,orbitR:44,speed:0.0003,tilt:26.7, atmoColor:'#E4D5A0',aC:0.68,aP:3.0,rings:true},
   {id:'uranus', radius:1.75,orbitR:54,speed:0.0001,tilt:97.8, atmoColor:'#88EEEE',aC:0.72,aP:3.2,thinRings:true},
   {id:'neptune',radius:1.65,orbitR:63,speed:0.00006,tilt:28.3,atmoColor:'#4466DD',aC:0.75,aP:3.0},
+  {id:'pluto',  radius:0.19,orbitR:80,speed:0.00004,tilt:122.5,atmoColor:null},
 ];
 const GLOW=['#B0B0A8','#E8C56B','#2E8FF5','#C1440E','#C8A87A','#E4D5A0','#7DE8E8','#4060D8'];
 const NEARBY_STARS=[
@@ -93,6 +95,8 @@ export class SolarSystem3D{
     this._stellarNeighMat=null; this._orionArmMat=null;
     this._orionNebMats=[]; this._galaxyDiscMat=null;
     this._galHazeMat=null; this._galBandMat=null;
+    this._andromedaMat=null; this._globularMats=[];
+    this._sunRays=[];
   }
 
   /* ── INIT ─────────────────────────────────────────────────── */
@@ -158,6 +162,8 @@ export class SolarSystem3D{
     setTimeout(()=>{ try{this._buildOrionArm();}catch(e){} }, 400);
     setTimeout(()=>{ try{this._buildGalacticHaze();}catch(e){} }, 800);
     setTimeout(()=>{ try{this._buildGalaxyDisc();}catch(e){} }, 1400);
+    setTimeout(()=>{ try{this._buildAndromeda();}catch(e){} }, 1800);
+    setTimeout(()=>{ try{this._buildGlobularClusters();}catch(e){} }, 2200);
   }
 
   /* ── Skybox ──────────────────────────────────────────────── */
@@ -398,6 +404,59 @@ export class SolarSystem3D{
     ySpr.scale.set(55,55,1);this.scene.add(ySpr);this._ourPosSpr=ySpr;
   }
 
+  /* ── Andromeda Galaxy ──────────────────────────────────────── */
+  /* Nearest major galaxy, 2.5M ly away. Fades in at 8000+ units. */
+  _buildAndromeda(){
+    const cv=document.createElement('canvas');cv.width=cv.height=256;
+    const g=cv.getContext('2d');
+    /* Bright nucleus */
+    const gr=g.createRadialGradient(128,128,0,128,128,100);
+    gr.addColorStop(0,'rgba(230,218,200,1)');gr.addColorStop(0.12,'rgba(210,195,175,0.7)');
+    gr.addColorStop(0.4,'rgba(175,162,140,0.3)');gr.addColorStop(0.75,'rgba(120,110,95,0.08)');gr.addColorStop(1,'transparent');
+    g.save();g.translate(128,128);g.rotate(0.55);g.scale(1.0,0.28);g.translate(-128,-128);
+    g.fillStyle=gr;g.fillRect(0,0,256,256);g.restore();
+    /* Outer halo */
+    const hr=g.createRadialGradient(128,128,0,128,128,120);
+    hr.addColorStop(0,'transparent');hr.addColorStop(0.5,'rgba(150,140,125,0.06)');hr.addColorStop(1,'transparent');
+    g.fillStyle=hr;g.fillRect(0,0,256,256);
+    const spr=new THREE.Sprite(new THREE.SpriteMaterial({
+      map:new THREE.CanvasTexture(cv),transparent:true,opacity:0,
+      blending:THREE.AdditiveBlending,depthWrite:false
+    }));
+    spr.position.set(12000,1800,-8200);
+    spr.scale.set(4200,1400,1);
+    this.scene.add(spr);
+    this._andromedaMat=spr.material;
+  }
+
+  /* ── Globular Clusters ────────────────────────────────────── */
+  /* 8 bright spherical clusters orbiting the galactic halo.       */
+  _buildGlobularClusters(){
+    const cv=document.createElement('canvas');cv.width=cv.height=128;
+    const g=cv.getContext('2d');
+    const gr=g.createRadialGradient(64,64,0,64,64,55);
+    gr.addColorStop(0,'rgba(255,248,220,0.95)');gr.addColorStop(0.25,'rgba(240,225,180,0.6)');
+    gr.addColorStop(0.6,'rgba(200,185,140,0.18)');gr.addColorStop(1,'transparent');
+    g.fillStyle=gr;g.fillRect(0,0,128,128);
+    const tex=new THREE.CanvasTexture(cv);
+    this._globularMats=[];
+    const positions=[
+      [5200,3800,-2200],[−4800,4200,3100],[3100,−3600,5500],[−5600,3200,−1800],
+      [6200,−2800,2400],[−2200,5100,−4800],[4400,2100,−5800],[−3800,−4400,3600]
+    ];
+    positions.forEach(([x,y,z])=>{
+      const spr=new THREE.Sprite(new THREE.SpriteMaterial({
+        map:tex,transparent:true,opacity:0,
+        blending:THREE.AdditiveBlending,depthWrite:false
+      }));
+      spr.position.set(x,y,z);
+      const s=280+Math.random()*180;
+      spr.scale.set(s,s,1);
+      this.scene.add(spr);
+      this._globularMats.push(spr.material);
+    });
+  }
+
   /* ── Lights ──────────────────────────────────────────────── */
   _buildLights(){
     this.scene.add(new THREE.AmbientLight(0x303348,3.5));
@@ -422,6 +481,24 @@ export class SolarSystem3D{
     fg.fillStyle=fgr;fg.fillRect(0,0,256,256);
     this.flareSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fc),transparent:true,opacity:0.75,blending:THREE.AdditiveBlending,depthWrite:false}));
     this.flareSpr.scale.set(28,28,1);this.scene.add(this.flareSpr);
+
+    /* Animated corona ray spikes */
+    this._sunRays=[];
+    for(let i=0;i<18;i++){
+      const baseAng=i/18*Math.PI*2;
+      const baseLen=8+Math.random()*18;
+      const cv=document.createElement('canvas');cv.width=4;cv.height=128;
+      const rg=cv.getContext('2d'),gr=rg.createLinearGradient(0,0,0,128);
+      gr.addColorStop(0,'rgba(255,230,120,0)');gr.addColorStop(0.08,'rgba(255,220,100,0.55)');
+      gr.addColorStop(0.5,'rgba(255,190,60,0.18)');gr.addColorStop(1,'rgba(255,120,0,0)');
+      rg.fillStyle=gr;rg.fillRect(0,0,4,128);
+      const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,opacity:0.0,blending:THREE.AdditiveBlending,depthWrite:false,rotation:baseAng}));
+      const r=4.5+baseLen*0.5,hl=baseLen*0.5;
+      spr.position.set(Math.cos(baseAng)*r,Math.sin(baseAng)*r,0);
+      spr.scale.set(1.2,baseLen*1.4,1);
+      this.scene.add(spr);
+      this._sunRays.push({spr,mat:spr.material,baseAng,baseLen,phase:Math.random()*Math.PI*2,speed:0.4+Math.random()*0.8});
+    }
   }
 
   /* ── Solar particles ─────────────────────────────────────── */
@@ -856,10 +933,24 @@ export class SolarSystem3D{
     if(this._ourPosSpr)
       this._ourPosSpr.material.opacity=Math.min(0.9,Math.max(0,(r-6000)/3000));
 
+    /* Globular clusters: visible at galaxy scale (7000+) */
+    const gcA=Math.min(0.82,Math.max(0,(r-7000)/4000));
+    this._globularMats.forEach(m=>m.opacity=gcA);
+
+    /* Andromeda: the neighbour galaxy (8000+) */
+    if(this._andromedaMat)
+      this._andromedaMat.opacity=Math.min(0.78,Math.max(0,(r-8000)/5000));
+
     /* Slowly rotate galaxy disc */
     if(this._galaxyDisc)this._galaxyDisc.rotation.z+=0.000012;
     /* Pulse "You are here" */
     if(this._ourPosSpr&&r>6000){const p=Math.sin(Date.now()*0.0009);this._ourPosSpr.scale.setScalar(55+p*9);}
+
+    /* Sun corona rays: only visible when close to sun */
+    const sunVis=Math.max(0,1-this.camera.position.length()/80);
+    this._sunRays.forEach(ray=>{
+      ray.mat.opacity=sunVis*(0.08+0.07*Math.sin(Date.now()*0.001*ray.speed+ray.phase));
+    });
   }
 
   /* ── Comet ───────────────────────────────────────────────── */
@@ -917,10 +1008,19 @@ export class SolarSystem3D{
       this._updateSurfaceHUD();
       this._updateLabels();
 
-      /* Sun animation */
+      /* Sun animation + corona rays */
       if(this.sunMesh){this.sunMesh.rotation.y=t*0.07;this.sunMesh.scale.setScalar(1+.022*Math.sin(t*1.3));}
       this._coronas?.forEach(({mesh,base},i)=>{mesh.material.opacity=base*(1+.18*Math.sin(t*.72+i*1.1));});
       this.flareSpr?.position.set(0,0,0);
+      /* Animate sun ray positions (breathing scale) */
+      if(this._sunRays.length){
+        this._sunRays.forEach(ray=>{
+          const breathe=1+0.18*Math.sin(t*ray.speed+ray.phase);
+          const r=4.5+ray.baseLen*0.5*breathe,hl=ray.baseLen*breathe;
+          ray.spr.position.set(Math.cos(ray.baseAng)*r,Math.sin(ray.baseAng)*r,0);
+          ray.spr.scale.set(1.2,hl*1.4,1);
+        });
+      }
 
       /* Solar wind */
       if(this._solarPos){
