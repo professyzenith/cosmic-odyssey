@@ -163,10 +163,8 @@ export class SolarSystem3D{
     this._buildHeliosphere();
     this._buildOortCloud();
     this._buildNearbyStarSystems();
-    /* Defer Milky Way — heavy 60k particle loop, build after first frame */
-    setTimeout(()=>{
-      try{ this._buildMilkyWay(); }catch(e){ console.warn('Milky Way build error:',e); }
-    },300);
+    /* Galaxy disc — builds asynchronously so it doesn't block */
+    this._buildGalaxyDisc();
   }
 
   /* ── Skybox ─────────────────────────────────────────────── */
@@ -361,86 +359,131 @@ export class SolarSystem3D{
     });
   }
 
-  /* ── Milky Way ──────────────────────────────────────────── */
-  _buildMilkyWay(){
-    /* Galactic center is ~26,000 ly away in Sagittarius direction */
-    const GC=new THREE.Vector3(280,-380,-2600);
-    const GRAD=1900; /* galaxy radius in scene units */
+  /* ── Galaxy Disc (canvas-rendered spiral, fades in on zoom-out) ── */
+  _buildGalaxyDisc(){
+    const SZ=2048;
+    const canvas=document.createElement('canvas');
+    canvas.width=canvas.height=SZ;
+    const ctx=canvas.getContext('2d');
 
-    /* ─ Disc + spiral arms ─ */
-    const ND=60000,posD=new Float32Array(ND*3),colD=new Float32Array(ND*3);
-    for(let i=0;i<ND;i++){
-      let x,y,z;
-      const type=Math.random();
-      if(type<0.42){
-        /* Spiral arm */
-        const arm=Math.floor(Math.random()*4);
-        const t=Math.pow(Math.random(),0.55);
-        const aOff=arm*Math.PI/2;
-        const ang=aOff+t*Math.PI*2.8+(Math.random()-.5)*0.55;
-        const r=60+t*GRAD*0.92+(Math.random()-.5)*160;
-        const scat=55*(1-t*0.55);
-        x=Math.cos(ang)*r+(Math.random()-.5)*scat;
-        z=Math.sin(ang)*r+(Math.random()-.5)*scat;
-        y=(Math.random()-.5)*55*Math.exp(-r/(GRAD*0.9));
-      } else if(type<0.68){
-        /* Disc background */
-        const r=Math.pow(Math.random(),0.65)*GRAD;
-        const ang=Math.random()*Math.PI*2;
-        x=Math.cos(ang)*r;z=Math.sin(ang)*r;
-        y=(Math.random()-.5)*75*Math.exp(-r/GRAD);
-      } else {
-        /* Central bulge */
-        const r=Math.pow(Math.random(),3)*280;
-        const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
-        x=r*Math.sin(ph)*Math.cos(th);y=r*Math.cos(ph)*0.45;z=r*Math.sin(ph)*Math.sin(th);
-      }
-      posD[i*3]=GC.x+x;posD[i*3+1]=GC.y+y;posD[i*3+2]=GC.z+z;
-      const dist=Math.sqrt(x*x+z*z)/GRAD;
-      const inBulge=dist<0.12;
-      const R=inBulge?1.0:THREE.MathUtils.lerp(0.95,0.5,dist);
-      const G=inBulge?0.88:THREE.MathUtils.lerp(0.83,0.62,dist);
-      const B=inBulge?0.52:THREE.MathUtils.lerp(0.52,1.0,dist);
-      const br=0.4+Math.random()*0.6;
-      colD[i*3]=R*br;colD[i*3+1]=G*br;colD[i*3+2]=B*br;
+    /* 1. Black background */
+    ctx.fillStyle='#000000';
+    ctx.fillRect(0,0,SZ,SZ);
+
+    /* 2. Draw stars via fast ImageData accumulation */
+    const imageData=ctx.getImageData(0,0,SZ,SZ);
+    const d=imageData.data;
+    const CX=SZ/2, CY=SZ/2, HR=SZ*0.47;
+
+    function addPixel(x,y,r,g,b,a){
+      const xi=Math.round(x),yi=Math.round(y);
+      if(xi<0||xi>=SZ||yi<0||yi>=SZ)return;
+      /* circular mask */
+      const dx=xi-CX,dy=yi-CY;
+      if(dx*dx+dy*dy>HR*HR)return;
+      const idx=(yi*SZ+xi)*4;
+      d[idx]  =Math.min(255,d[idx]  +r);
+      d[idx+1]=Math.min(255,d[idx+1]+g);
+      d[idx+2]=Math.min(255,d[idx+2]+b);
+      d[idx+3]=255;
     }
-    const geoD=new THREE.BufferGeometry();
-    geoD.setAttribute('position',new THREE.BufferAttribute(posD,3));
-    geoD.setAttribute('color',   new THREE.BufferAttribute(colD,3));
-    this.scene.add(new THREE.Points(geoD,new THREE.PointsMaterial({size:3.5,vertexColors:true,transparent:true,opacity:0.75,depthWrite:false,sizeAttenuation:true})));
 
-    /* ─ Galactic center glow ─ */
-    [
-      {r:250,op:0.18,c:'#FFE8A0'},
-      {r:140,op:0.25,c:'#FFCC60'},
-      {r: 70,op:0.38,c:'#FF9920'},
-    ].forEach(({r,op,c})=>{
-      const m=new THREE.Mesh(new THREE.SphereGeometry(r,24,24),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op,depthWrite:false}));
-      m.position.copy(GC);this.scene.add(m);
+    /* Spiral arms (4 arms, Milky Way pattern) */
+    for(let i=0;i<90000;i++){
+      const arm=i%4;
+      const t=Math.pow(Math.random(),0.55);
+      const ang=arm*Math.PI/2 + t*Math.PI*3.2 + (Math.random()-.5)*0.5;
+      const r=(0.05+t*0.44+(Math.random()-.5)*0.06)*HR;
+      const scat=HR*0.028*(1-t*0.5);
+      const x=CX+Math.cos(ang)*r+(Math.random()-.5)*scat*2;
+      const y=CY+Math.sin(ang)*r+(Math.random()-.5)*scat*2;
+      const br=Math.floor(40+Math.random()*160*(1-t*0.25));
+      /* Bluer toward outer arms, yellower toward center */
+      const rv=Math.floor(br*(t<0.3?1.0:0.75));
+      const gv=Math.floor(br*(t<0.3?0.88:0.70));
+      const bv=Math.floor(br*(t<0.3?0.55:0.95));
+      addPixel(x,y,rv,gv,bv,255);
+    }
+
+    /* Background disc stars */
+    for(let i=0;i<30000;i++){
+      const r=Math.sqrt(Math.random())*HR*0.95;
+      const a=Math.random()*Math.PI*2;
+      const x=CX+Math.cos(a)*r, y=CY+Math.sin(a)*r;
+      const br=Math.floor(10+Math.random()*60);
+      addPixel(x,y,br,br,Math.floor(br*1.1),255);
+    }
+
+    /* Central bulge */
+    for(let i=0;i<25000;i++){
+      const r=Math.pow(Math.random(),2.5)*HR*0.12;
+      const a=Math.random()*Math.PI*2;
+      const x=CX+Math.cos(a)*r, y=CY+Math.sin(a)*r*0.7;
+      const br=Math.floor(80+Math.random()*175);
+      addPixel(x,y,br,Math.floor(br*0.88),Math.floor(br*0.52),255);
+    }
+
+    ctx.putImageData(imageData,0,0);
+
+    /* 3. Galactic centre glow (orange-yellow) */
+    const gc=ctx.createRadialGradient(CX,CY,0,CX,CY,SZ*0.14);
+    gc.addColorStop(0,'rgba(255,230,140,0.75)');
+    gc.addColorStop(0.25,'rgba(255,180,60,0.45)');
+    gc.addColorStop(0.6,'rgba(200,100,20,0.18)');
+    gc.addColorStop(1,'transparent');
+    ctx.fillStyle=gc; ctx.fillRect(0,0,SZ,SZ);
+
+    /* 4. HII nebula regions (pink-red emission) */
+    [[0.62,0.45,0.055,'rgba(255,60,80,0.22)'],[0.72,0.58,0.04,'rgba(255,40,60,0.18)'],[0.34,0.58,0.048,'rgba(200,40,120,0.16)'],[0.55,0.74,0.038,'rgba(255,80,40,0.14)']].forEach(([fx,fy,fr,c])=>{
+      const ng=ctx.createRadialGradient(fx*SZ,fy*SZ,0,fx*SZ,fy*SZ,fr*SZ);
+      ng.addColorStop(0,c); ng.addColorStop(1,'transparent');
+      ctx.fillStyle=ng; ctx.fillRect(0,0,SZ,SZ);
     });
-    const atmoGlow=new THREE.Mesh(new THREE.SphereGeometry(320,24,24),makeAtmoMat('#FFD080',0.9,2.2));
-    atmoGlow.position.copy(GC);
-    this.scene.add(atmoGlow);
 
-    /* Mark galactic center position */
-    this._gcPos=GC;
-
-    /* ─ Globular clusters ─ */
-    const clusters=[
-      {pos:new THREE.Vector3(GC.x+600,GC.y+500,GC.z+400),name:'Ω Centauri'},
-      {pos:new THREE.Vector3(GC.x-800,GC.y+300,GC.z-600),name:'M13'},
-      {pos:new THREE.Vector3(GC.x+200,GC.y-700,GC.z+900),name:'M22'},
-    ];
-    clusters.forEach(({pos})=>{
-      const N2=800,cp=new Float32Array(N2*3);
-      for(let i=0;i<N2;i++){const r=Math.pow(Math.random(),2)*30,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);cp[i*3]=pos.x+r*Math.sin(ph)*Math.cos(th);cp[i*3+1]=pos.y+r*Math.cos(ph)*0.8;cp[i*3+2]=pos.z+r*Math.sin(ph)*Math.sin(th);}
-      const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.BufferAttribute(cp,3));
-      this.scene.add(new THREE.Points(cg,new THREE.PointsMaterial({color:0xFFEEAA,size:2.2,transparent:true,opacity:0.7,depthWrite:false})));
+    /* 5. Reflection nebulae (blue-cyan) */
+    [[0.38,0.54,0.045,'rgba(40,100,255,0.18)'],[0.48,0.28,0.038,'rgba(60,180,255,0.14)'],[0.78,0.42,0.04,'rgba(40,80,200,0.12)']].forEach(([fx,fy,fr,c])=>{
+      const ng=ctx.createRadialGradient(fx*SZ,fy*SZ,0,fx*SZ,fy*SZ,fr*SZ);
+      ng.addColorStop(0,c); ng.addColorStop(1,'transparent');
+      ctx.fillStyle=ng; ctx.fillRect(0,0,SZ,SZ);
     });
 
-    /* ─ "Our position" marker (visible when zoomed out) ─ */
-    const ourSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:makeGlowTex('#4499FF'),transparent:true,opacity:0.0,blending:THREE.AdditiveBlending,depthWrite:false}));
-    ourSpr.scale.set(40,40,1);ourSpr.position.set(0,0,0);this.scene.add(ourSpr);
+    /* 6. Circular vignette mask — fade edges to black */
+    const mask=ctx.createRadialGradient(CX,CY,HR*0.72,CX,CY,HR);
+    mask.addColorStop(0,'transparent');
+    mask.addColorStop(1,'rgba(0,0,0,1)');
+    ctx.fillStyle=mask; ctx.fillRect(0,0,SZ,SZ);
+
+    /* 7. LMC / SMC satellite galaxies */
+    [[CX+HR*0.88,CY+HR*0.55,HR*0.065,'rgba(200,190,160,0.28)'],[CX+HR*0.72,CY+HR*0.68,HR*0.04,'rgba(180,175,155,0.22)']].forEach(([gx,gy,gr,c])=>{
+      const gg=ctx.createRadialGradient(gx,gy,0,gx,gy,gr);
+      gg.addColorStop(0,c); gg.addColorStop(1,'transparent');
+      ctx.fillStyle=gg; ctx.fillRect(0,0,SZ,SZ);
+    });
+
+    const tex=new THREE.CanvasTexture(canvas);
+    tex.colorSpace=THREE.SRGBColorSpace;
+
+    /* Create a large disc — 5000 wide, tilted ~28° (galactic plane inclination) */
+    const geo=new THREE.PlaneGeometry(5000,5000,1,1);
+    const mat=new THREE.MeshBasicMaterial({
+      map:tex, transparent:true, opacity:0,
+      side:THREE.DoubleSide, depthWrite:false,
+      blending:THREE.AdditiveBlending,
+    });
+    const disc=new THREE.Mesh(geo,mat);
+    disc.rotation.x=Math.PI/2;       /* lay flat */
+    disc.rotation.z=THREE.MathUtils.degToRad(28); /* galactic tilt */
+    disc.position.set(0,-8,0);       /* slightly below solar system plane */
+    this.scene.add(disc);
+    this._galaxyDisc=disc;
+    this._galaxyDiscMat=mat;
+
+    /* "You are here" blue dot visible at galaxy scale */
+    const ourSpr=new THREE.Sprite(new THREE.SpriteMaterial({
+      map:makeGlowTex('#4499FF'),transparent:true,opacity:0,
+      blending:THREE.AdditiveBlending,depthWrite:false}));
+    ourSpr.scale.set(35,35,1);
+    this.scene.add(ourSpr);
     this._ourPosSpr=ourSpr;
   }
 
@@ -797,6 +840,21 @@ export class SolarSystem3D{
         const p=c.life/c.maxLife;c.mat.opacity=(p<0.3?p/0.3:1-(p-.3)/.7)*.72;
         c.line.position.addScaledVector(c.dir,c.speed*dt*60);
         if(c.life>=c.maxLife){this.scene.remove(c.line);c.line.geometry.dispose();this.comets.splice(i,1);}
+      }
+
+      /* Galaxy disc — fade in as camera zooms out */
+      if(this._galaxyDiscMat){
+        const r=this._camR;
+        /* Starts appearing at 150 units, full at 600, max 0.82 */
+        const alpha=Math.min(0.82,Math.max(0,(r-150)/450));
+        this._galaxyDiscMat.opacity=alpha;
+        /* Slow rotation so galaxy gently spins */
+        if(this._galaxyDisc)this._galaxyDisc.rotation.z+=dt*0.0008;
+      }
+      /* "You are here" dot */
+      if(this._ourPosSpr){
+        const r=this._camR;
+        this._ourPosSpr.material.opacity=Math.min(0.9,Math.max(0,(r-400)/300));
       }
 
       this.composer.render();
