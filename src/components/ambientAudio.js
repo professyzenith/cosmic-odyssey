@@ -389,61 +389,96 @@ export class AmbientAudio {
     this._nodes.push(noise);
   }
 
-  /* ── Layer: Bell Sparkles ───────────────────────────────── */
+  /* ── Layer: Violin / String Melody ──────────────────────── */
   _buildSparkle() {
     const { ctx } = this;
 
     const gain = ctx.createGain();
-    gain.gain.value = 0.10;
+    gain.gain.value = 0.12;
     gain.connect(this.masterGain);
 
+    // Heavy reverb — spacious string hall
     const rvSend = ctx.createGain();
-    rvSend.gain.value = 0.9;
+    rvSend.gain.value = 0.88;
     gain.connect(rvSend);
     rvSend.connect(this._reverb);
 
-    const bellScale = [523.25, 659.25, 783.99, 987.77, 1046.5, 1318.5, 1568, 2093];
+    // Pentatonic string scale — mid range, warm
+    const stringScale = [196.00, 246.94, 293.66, 349.23, 392.00,
+                         493.88, 587.33, 659.25, 783.99, 987.77];
 
-    const spark = () => {
+    const playViolin = () => {
       if (!this.ctx || !this.started) return;
-      const t = ctx.currentTime;
-      const freq = bellScale[Math.floor(Math.random() * bellScale.length)];
-      const dur = 2.5 + Math.random() * 3.0;
+      const t   = ctx.currentTime;
+      const freq = stringScale[Math.floor(Math.random() * stringScale.length)];
+      const dur  = 3.5 + Math.random() * 4.5;
 
-      // FM bell synthesis
-      const mod = ctx.createOscillator();
-      mod.type = 'sine';
-      mod.frequency.value = freq * 1.414;
-      const modG = ctx.createGain();
-      modG.gain.setValueAtTime(freq * 3.5, t);
-      modG.gain.exponentialRampToValueAtTime(1, t + dur * 0.3);
-      mod.connect(modG);
+      // ── Violin synthesis ──
+      // Layer 1: sawtooth (rich harmonics like a bowed string)
+      const saw = ctx.createOscillator();
+      saw.type = 'sawtooth';
+      saw.frequency.value = freq;
 
-      const car = ctx.createOscillator();
-      car.type = 'sine';
-      car.frequency.value = freq;
-      modG.connect(car.frequency);
+      // Vibrato LFO — 5–6 Hz, ±8 cents, delayed onset
+      const vib = ctx.createOscillator();
+      vib.type = 'sine';
+      vib.frequency.value = 5.5 + Math.random() * 0.8;
+      const vibDepth = ctx.createGain();
+      vibDepth.gain.setValueAtTime(0, t);
+      vibDepth.gain.linearRampToValueAtTime(freq * 0.006, t + 0.8); // vibrato swells in
+      vib.connect(vibDepth);
+      vibDepth.connect(saw.frequency);
 
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.25 + Math.random() * 0.2, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      // Bow pressure filter — bandpass that shapes bow noise into string tone
+      const bpf = ctx.createBiquadFilter();
+      bpf.type = 'bandpass';
+      bpf.frequency.value = freq * 2.8;
+      bpf.Q.value = 1.8;
 
-      mod.connect(modG);
-      car.connect(g);
-      g.connect(gain);
+      // Second harmonic (octave) for richness
+      const saw2 = ctx.createOscillator();
+      saw2.type = 'sawtooth';
+      saw2.frequency.value = freq * 2;
+      saw2.detune.value = -5; // slight natural detuning
 
-      mod.start(t); mod.stop(t + dur + 0.1);
-      car.start(t); car.stop(t + dur + 0.1);
+      // Highpass to remove mud from octave layer
+      const hpf = ctx.createBiquadFilter();
+      hpf.type = 'highpass';
+      hpf.frequency.value = freq * 1.8;
+      hpf.Q.value = 0.5;
 
-      this._nodes.push(car, mod);
+      // Envelope — slow bow attack, sustain, natural decay
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0, t);
+      env.gain.linearRampToValueAtTime(0.22 + Math.random() * 0.12, t + 0.35); // bow attack
+      env.gain.setValueAtTime(0.22 + Math.random() * 0.12, t + dur - 0.7);
+      env.gain.linearRampToValueAtTime(0, t + dur); // natural release
 
-      const nextIn = 5000 + Math.random() * 14000;
-      const id = setTimeout(spark, nextIn);
+      const env2 = ctx.createGain();
+      env2.gain.setValueAtTime(0, t);
+      env2.gain.linearRampToValueAtTime(0.06, t + 0.5);
+      env2.gain.linearRampToValueAtTime(0, t + dur * 0.8);
+
+      saw.connect(bpf);
+      bpf.connect(env);
+      saw2.connect(hpf);
+      hpf.connect(env2);
+      env.connect(gain);
+      env2.connect(gain);
+
+      vib.start(t); saw.start(t); saw2.start(t);
+      vib.stop(t + dur + 0.2);
+      saw.stop(t + dur + 0.2);
+      saw2.stop(t + dur + 0.2);
+
+      this._nodes.push(saw, saw2, vib);
+
+      const nextIn = 4000 + Math.random() * 10000;
+      const id = setTimeout(playViolin, nextIn);
       this._timers.push(id);
     };
 
-    const id = setTimeout(spark, 8000);
+    const id = setTimeout(playViolin, 7000);
     this._timers.push(id);
   }
 

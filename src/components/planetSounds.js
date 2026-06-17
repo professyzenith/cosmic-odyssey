@@ -27,62 +27,58 @@ const PLANET_THEMES = {
 
   mercury: {
     label: 'Mercury — Crystalline Resonance',
-    // High, glassy, cracked — no atmosphere, metallic
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 3.0, 2.8);
       rev.connect(master);
       const t = ctx.currentTime;
 
-      // Metallic FM bell tones
+      // High, glassy string harmonics — short staccato bows
       [880, 1108, 1320, 1760].forEach((freq, i) => {
-        const delay = i * 0.18;
-        _fmBell(ctx, freq, 2.2 + i * 0.4, 0, t + delay, 0.14 - i * 0.025, master, rev);
+        _violin(ctx, freq, 2.0 + i * 0.3, t + i * 0.22, 0.13 - i * 0.02, master, rev, true);
       });
 
-      // High shimmer noise sweep
-      const noise = _coloredNoise(ctx, 'highpass', 3500, 12, 0.06, 3.5, t);
+      // High shimmer noise
+      const noise = _coloredNoise(ctx, 'highpass', 3500, 12, 0.05, 3.5, t);
       noise.connect(master);
     }
   },
 
   venus: {
     label: 'Venus — Toxic Warmth',
-    // Smothering heat, thick atmosphere, slow and oppressive
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 5.0, 3.5);
       rev.connect(master);
       const t = ctx.currentTime;
 
-      // Slow, warm, detuned pads (sulfuric yellow warmth)
+      // Slow, warm, detuned pads
       [87.31, 130.81, 174.61].forEach((freq, i) => {
         _warmPad(ctx, freq, 5.5, t + i * 0.3, 0.18 - i * 0.04, master, rev);
       });
 
-      // Haunting high tone — like wind across hot rock
-      _fmBell(ctx, 523.25, 4.0, 0, t + 1.2, 0.09, master, rev);
+      // Haunting solo violin line — mournful, sustained
+      _violin(ctx, 523.25, 5.0, t + 1.2, 0.12, master, rev, false);
     }
   },
 
   earth: {
     label: 'Earth — Home',
-    // Rich, full, alive — lush orchestral warmth
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 4.0, 2.2);
       rev.connect(master);
       const t = ctx.currentTime;
 
-      // Full major chord — C major (bright, alive)
+      // Full major chord pads
       [130.81, 164.81, 196.00, 261.63, 329.63].forEach((freq, i) => {
         _warmPad(ctx, freq, 5.0, t + i * 0.12, 0.16 - i * 0.022, master, rev);
       });
 
-      // Bright bell overtones
+      // Orchestral violin melody — warm, alive
       [523.25, 659.25, 783.99].forEach((freq, i) => {
-        _fmBell(ctx, freq, 3.0, 0, t + 0.6 + i * 0.35, 0.10, master, rev);
+        _violin(ctx, freq, 4.5, t + 0.5 + i * 0.5, 0.13, master, rev, false);
       });
 
-      // Water-like high shimmer
-      const noise = _coloredNoise(ctx, 'highpass', 4000, 15, 0.025, 4.5, t + 1.5);
+      // Gentle high shimmer
+      const noise = _coloredNoise(ctx, 'highpass', 4000, 15, 0.022, 4.5, t + 1.5);
       noise.connect(master);
     }
   },
@@ -136,7 +132,6 @@ const PLANET_THEMES = {
 
   saturn: {
     label: 'Saturn — Rings of Time',
-    // Ethereal, vast, mysterious — crystalline ring tones
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 8.0, 5.0);
       rev.connect(master);
@@ -147,9 +142,9 @@ const PLANET_THEMES = {
         _deepDrone(ctx, freq, 6.5, t + i * 0.5, 0.20 - i * 0.07, master, rev);
       });
 
-      // Ring tones — delicate ascending FM bells (like crystal bowls)
+      // Ascending violin lines — ethereal, ring-like bowing
       [440, 554.37, 659.25, 783.99, 987.77].forEach((freq, i) => {
-        _fmBell(ctx, freq, 4.5, 0, t + i * 0.45, 0.10, master, rev);
+        _violin(ctx, freq, 5.5, t + i * 0.55, 0.11, master, rev, false);
       });
 
       // Slow pad warmth
@@ -159,89 +154,129 @@ const PLANET_THEMES = {
 
   uranus: {
     label: 'Uranus — Tilted Ice',
-    // Cold, alien, sideways — eerie ice giant
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 5.5, 3.8);
       rev.connect(master);
       const t = ctx.currentTime;
 
-      // Cold, high-pitched eerie tones
+      // Cold, dissonant high violin lines — eerie ice giant
       [207.65, 277.18, 369.99].forEach((freq, i) => {
-        _fmBell(ctx, freq, 5.0, i * 200, t + i * 0.5, 0.11, master, rev);
+        _violin(ctx, freq, 5.5, t + i * 0.6, 0.11, master, rev, true);
       });
 
-      // Ice noise — cold bandpass
+      // Ice noise
       const noise = _coloredNoise(ctx, 'highpass', 2000, 8, 0.04, 5.0, t);
       noise.connect(master);
       const rvS = ctx.createGain(); rvS.gain.value = 0.8;
       noise.connect(rvS); rvS.connect(rev);
 
-      // Low alien drone — dissonant
+      // Low alien drone
       _deepDrone(ctx, 55.00, 4.5, t + 0.5, 0.12, master, rev);
     }
   },
 
   neptune: {
     label: 'Neptune — Edge of Everything',
-    // Vast, cold, windswept — the loneliest world
     fn(ctx, master) {
       const rev = createPlanetReverb(ctx, 9.0, 6.0);
       rev.connect(master);
       const t = ctx.currentTime;
 
-      // The deepest, most distant bass
+      // The deepest bass drones
       [18.35, 27.50, 36.71].forEach((freq, i) => {
         _deepDrone(ctx, freq, 7.0, t + i * 0.6, 0.24 - i * 0.06, master, rev);
       });
 
-      // Howling wind noise — extreme winds (2100 km/h)
+      // Howling wind noise
       const noise = _coloredNoise(ctx, 'bandpass', 180, 3, 0.08, 6.5, t + 0.8);
       noise.connect(master);
       const rvS = ctx.createGain(); rvS.gain.value = 0.9;
       noise.connect(rvS); rvS.connect(rev);
 
-      // Distant, faint crystalline tone (like starlight from here)
-      _fmBell(ctx, 493.88, 6.0, 0, t + 2.0, 0.07, master, rev);
+      // A single distant, lonely violin note — like light from far away
+      _violin(ctx, 493.88, 7.0, t + 2.0, 0.09, master, rev, false);
     }
   }
 };
 
 /* ── Synthesis helpers ─────────────────────────────────────── */
 
-/** FM Bell — carrier modulated for metallic bell quality */
-function _fmBell(ctx, freq, dur, detuneAmount, startTime, gain, dryBus, wetBus) {
-  const t = startTime;
+/**
+ * Violin / Bowed String Synthesis
+ * ─ sawtooth carrier (harmonics like a real string)
+ * ─ delayed vibrato LFO (5–6 Hz, swells in after 0.6s)
+ * ─ bandpass "bow pressure" filter
+ * ─ octave harmonic layer for richness
+ * ─ slow bow attack (0.25–0.45s), natural decay release
+ * @param {boolean} staccato  true = shorter, lighter bow stroke
+ */
+function _violin(ctx, freq, dur, startTime, gain, dryBus, wetBus, staccato = false) {
+  const t      = startTime;
+  const attack = staccato ? 0.12 : 0.32;
+  const level  = gain;
 
-  const modOsc = ctx.createOscillator();
-  modOsc.type = 'sine';
-  modOsc.frequency.value = freq * 2.756; // FM ratio for bell tone
+  // ── Fundamental sawtooth (bowed string body) ──
+  const saw = ctx.createOscillator();
+  saw.type = 'sawtooth';
+  saw.frequency.value = freq;
 
-  const modGain = ctx.createGain();
-  modGain.gain.setValueAtTime(freq * 4.5, t);
-  modGain.gain.exponentialRampToValueAtTime(freq * 0.1, t + dur * 0.25);
-  modOsc.connect(modGain);
+  // ── Vibrato: 5.6 Hz, delayed onset ──
+  const vib = ctx.createOscillator();
+  vib.type = 'sine';
+  vib.frequency.value = 5.6 + Math.random() * 0.6;
+  const vibG = ctx.createGain();
+  vibG.gain.setValueAtTime(0, t);
+  vibG.gain.linearRampToValueAtTime(freq * 0.0055, t + 0.65); // swell in
+  vib.connect(vibG);
+  vibG.connect(saw.frequency);
 
-  const car = ctx.createOscillator();
-  car.type = 'sine';
-  car.frequency.value = freq;
-  if (detuneAmount) car.detune.value = detuneAmount;
-  modGain.connect(car.frequency);
+  // ── Bow pressure bandpass (shapes harmonics into string tone) ──
+  const bpf = ctx.createBiquadFilter();
+  bpf.type = 'bandpass';
+  bpf.frequency.value = freq * 2.6;
+  bpf.Q.value = 1.6;
 
+  // ── Octave harmonic layer (brighter, drier) ──
+  const saw2 = ctx.createOscillator();
+  saw2.type = 'sawtooth';
+  saw2.frequency.value = freq * 2;
+  saw2.detune.value = -6;
+
+  const hpf = ctx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = freq * 1.85;
+  hpf.Q.value = 0.4;
+
+  // ── Envelope: bow attack → sustain → natural release ──
   const env = ctx.createGain();
   env.gain.setValueAtTime(0, t);
-  env.gain.linearRampToValueAtTime(gain, t + 0.02);
-  env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  env.gain.linearRampToValueAtTime(level, t + attack);
+  env.gain.setValueAtTime(level, t + dur - 0.65);
+  env.gain.linearRampToValueAtTime(0, t + dur);
 
-  car.connect(env);
+  const env2 = ctx.createGain();
+  env2.gain.setValueAtTime(0, t);
+  env2.gain.linearRampToValueAtTime(level * 0.28, t + attack + 0.1);
+  env2.gain.linearRampToValueAtTime(0, t + dur * 0.85);
+
+  saw.connect(bpf);
+  bpf.connect(env);
+  saw2.connect(hpf);
+  hpf.connect(env2);
+
   env.connect(dryBus);
+  env2.connect(dryBus);
 
   if (wetBus) {
-    const s = ctx.createGain(); s.gain.value = 0.7;
+    const s = ctx.createGain();
+    s.gain.value = staccato ? 0.5 : 0.75;
     env.connect(s); s.connect(wetBus);
   }
 
-  modOsc.start(t); modOsc.stop(t + dur + 0.1);
-  car.start(t); car.stop(t + dur + 0.1);
+  vib.start(t); saw.start(t); saw2.start(t);
+  vib.stop(t + dur + 0.2);
+  saw.stop(t + dur + 0.2);
+  saw2.stop(t + dur + 0.2);
 }
 
 /** Warm Pad — detuned sawtooth pair with slow attack */
