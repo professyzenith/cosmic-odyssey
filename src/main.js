@@ -101,6 +101,20 @@ function buildDOM() {
       <section id="hero" aria-label="Solar System 3D View">
         <canvas id="hero-canvas" aria-hidden="true"></canvas>
         <div class="hero-overlay" aria-hidden="true"></div>
+        
+        <!-- Simulation Controls -->
+        <div class="sim-controls" id="sim-controls" aria-label="Simulation controls">
+          <button id="sim-play" class="sim-btn" aria-label="Pause simulation">⏸ Pause</button>
+          <div class="sim-divider" aria-hidden="true"></div>
+          <div class="sim-slider-wrap">
+            <span class="sim-label">Orbit Warp</span>
+            <input type="range" id="sim-speed" min="0.1" max="10" step="0.1" value="1" aria-label="Simulation speed" />
+            <span class="sim-val" id="sim-speed-val">1.0x</span>
+          </div>
+          <div class="sim-divider" aria-hidden="true"></div>
+          <button id="sim-trails" class="sim-btn active" aria-label="Toggle orbit trails">Orbit Trails</button>
+        </div>
+
         <div class="hero-content">
           <p class="hero-eyebrow">Our Cosmic Neighborhood</p>
           <h2 class="hero-title">Solar System</h2>
@@ -601,6 +615,33 @@ function initHeroSolar() {
 
   const solar = new SolarSystemRenderer(canvas);
   solar.start();
+
+  // ── Simulation Control Event Listeners ──
+  const playBtn = document.getElementById('sim-play');
+  const speedSlider = document.getElementById('sim-speed');
+  const speedVal = document.getElementById('sim-speed-val');
+  const trailsBtn = document.getElementById('sim-trails');
+
+  playBtn?.addEventListener('click', () => {
+    const isPlaying = solar.togglePlay();
+    if (playBtn) {
+      playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+      playBtn.classList.toggle('paused', !isPlaying);
+    }
+  });
+
+  speedSlider?.addEventListener('input', (e) => {
+    const val = e.target.value;
+    solar.setSpeed(val);
+    if (speedVal) speedVal.textContent = parseFloat(val).toFixed(1) + 'x';
+  });
+
+  trailsBtn?.addEventListener('click', () => {
+    const showTrails = solar.toggleTrails();
+    if (trailsBtn) {
+      trailsBtn.classList.toggle('active', showTrails);
+    }
+  });
 
   const hoverCard = document.getElementById('planet-hover-card');
   const phcName = document.getElementById('phc-name');

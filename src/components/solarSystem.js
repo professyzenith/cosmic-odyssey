@@ -31,6 +31,10 @@ export class SolarSystemRenderer {
     this.comets = [];
     this.nextComet = 300;
 
+    this.isPlaying = true;
+    this.speedMultiplier = 1;
+    this.showTrails = true;
+
     this.resize();
   }
 
@@ -118,7 +122,9 @@ export class SolarSystemRenderer {
     const { ctx, CX, CY, scale } = this;
     ctx.fillStyle = '#888888';
     this.asteroids.forEach(a => {
-      a.angle += a.speed;
+      if (this.isPlaying) {
+        a.angle += a.speed * this.speedMultiplier;
+      }
       const r = a.r * scale;
       const ax = CX + Math.cos(a.angle) * r;
       const ay = CY + Math.sin(a.angle) * r;
@@ -132,7 +138,9 @@ export class SolarSystemRenderer {
 
   drawPlanet(p) {
     const { ctx, CX, CY, scale } = this;
-    p.currentAngle += p.speed;
+    if (this.isPlaying) {
+      p.currentAngle += p.speed * this.speedMultiplier;
+    }
     const orb = p.orb * scale;
     const px = CX + Math.cos(p.currentAngle) * orb;
     const py = CY + Math.sin(p.currentAngle) * orb;
@@ -271,16 +279,34 @@ export class SolarSystemRenderer {
     const { ctx, W, H } = this;
     ctx.clearRect(0, 0, W, H);
     this.drawSun();
-    this.planets.forEach(p => this.drawOrbitRing(this.CX, this.CY, p.orb * this.scale));
+    if (this.showTrails) {
+      this.planets.forEach(p => this.drawOrbitRing(this.CX, this.CY, p.orb * this.scale));
+    }
     this.drawAsteroids();
     this.planets.forEach(p => this.drawPlanet(p));
     this.drawComets();
-    this.t++;
+    if (this.isPlaying) {
+      this.t++;
+    }
     if (this.t >= this.nextComet) {
       this.spawnComet();
       this.nextComet = this.t + 400 + Math.random() * 600;
     }
     this.raf = requestAnimationFrame(() => this.frame());
+  }
+
+  setSpeed(val) {
+    this.speedMultiplier = parseFloat(val);
+  }
+
+  togglePlay() {
+    this.isPlaying = !this.isPlaying;
+    return this.isPlaying;
+  }
+
+  toggleTrails() {
+    this.showTrails = !this.showTrails;
+    return this.showTrails;
   }
 
   start() { if (!this.raf) this.frame(); }
