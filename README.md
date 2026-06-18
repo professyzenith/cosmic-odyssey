@@ -1,262 +1,199 @@
-# 🌌 Cosmic Odyssey — Welcome To The Imaginary World
+<div align="center">
 
-A production-ready, immersive Solar System website featuring real-time 3D planet renderers, cinematic intro, interactive tools, space missions, a quiz, live model integration, and a premium glassmorphism UI.
+<!-- ANIMATED BANNER -->
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d0d2b,50:1a1a6e,100:4b0082&height=200&section=header&text=🌌%20Cosmic%20Odyssey&fontSize=52&fontColor=f0c040&fontAlignY=38&desc=Welcome%20To%20The%20Imaginary%20World&descAlignY=58&descSize=18&descColor=aaaaff&animation=twinkling" width="100%"/>
+
+<br/>
+
+<!-- BADGES -->
+![JavaScript](https://img.shields.io/badge/JavaScript-79.8%25-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![CSS](https://img.shields.io/badge/CSS-19.4%25-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-0.8%25-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-3D%20Engine-000000?style=for-the-badge&logo=threedotjs&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-Build%20Tool-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+<br/>
+
+![Stars](https://img.shields.io/github/stars/professyzenith/cosmic-odyssey?style=social)
+![Forks](https://img.shields.io/github/forks/professyzenith/cosmic-odyssey?style=social)
+![Last Commit](https://img.shields.io/github/last-commit/professyzenith/cosmic-odyssey?color=f0c040&style=flat-square)
+
+<br/>
+
+> **A production-ready, immersive Solar System experience — real-time 3D planets, cinematic animations, interactive tools, synthesized audio, and a premium glassmorphism UI.**
+
+<br/>
+
+[🚀 Live Demo](#) &nbsp;·&nbsp; [📖 Features](#-features) &nbsp;·&nbsp; [⚙️ Installation](#%EF%B8%8F-installation) &nbsp;·&nbsp; [🪐 Planets](#-planets) &nbsp;·&nbsp; [🤝 Contributing](#-contributing)
+
+</div>
+
+---
+
+## 🌠 Preview
+
+<div align="center">
+
+| Hero / Cinematic Intro | Live 3D Solar System | Planet Detail View |
+|:---:|:---:|:---:|
+| ![Cinematic](https://via.placeholder.com/280x160/0d0d2b/f0c040?text=🎬+Cinematic+Intro) | ![Orrery](https://via.placeholder.com/280x160/0a0a1f/4fc3f7?text=🪐+Solar+Orrery) | ![Planet](https://via.placeholder.com/280x160/1a0800/ef6c00?text=🔴+Planet+Detail) |
+
+</div>
 
 ---
 
 ## ✨ Features
 
-| Feature | Details |
-|---|---|
+<div align="center">
+
+| 🎬 Feature | 📋 Details |
+|:---|:---|
 | **Cinematic Intro** | Animated particle typography, nebula background, shooting stars |
-| **Hero Solar System** | Real-time 2D canvas solar system — all 8 planets, asteroid belt, comets, Saturn rings |
-| **Planet Sections** | Full-screen sections for each planet with rotating 3D canvas renderer |
+| **Hero Solar System** | Real-time 2D canvas — all 8 planets, asteroid belt, comets, Saturn rings |
+| **3D Planet Sections** | Full-screen sections per planet with rotating Three.js canvas renderer |
 | **Planet Surface Detail** | Jupiter's Great Red Spot, Earth's continents & clouds, Mars dust storms, Neptune's Dark Spot |
-| **Planet Sounds** | Click any planet name to hear its unique synthesized audio signature (Web Audio API) |
-| **Missions Section** | 8 major missions with animated cards (Voyager, JWST, Cassini, etc.) |
-| **NASA Gallery** | 9-card masonry gallery with lightbox, keyboard navigation, prev/next |
-| **Educational Section** | 3-level learning cards (Beginner / Intermediate / Advanced) with tab switching |
-| **Planet Search** | Overlay search with live filtering (Ctrl+K / ⌘K) |
-| **Favorites** | Bookmark planets to a persistent favorites panel |
-| **Compare Tool** | Side-by-side planet comparison with all stats |
-| **Distance Calculator** | Real-time distance between any two bodies in km, AU, and light-minutes |
-| **Space Facts Generator** | Random fact button with smooth transitions |
-| **Solar System Quiz** | 8-question randomized quiz with scoring and grade system |
-| **Timeline** | 14-event interactive discovery timeline |
-| **Ambient Audio** | Web Audio API synthesized space music — starts on user gesture, fade in/out, mute/volume |
-| **Live 3D Model** | Embedded solarsystemscope.com in futuristic glassmorphism frame |
-| **Starfield Background** | Animated nebulae, twinkling stars, shooting stars throughout |
-| **Nav Bar** | Floating glassmorphism navbar with scroll-based active state |
-| **Footer** | Animated star field footer with newsletter, links |
-| **SEO** | Full meta tags, OG tags, Twitter cards, sitemap.xml, robots.txt |
-| **Accessibility** | ARIA labels, keyboard navigation, semantic HTML, reduced-motion support |
+| **Planet Sounds** | Click any planet to hear its unique synthesized audio signature (Web Audio API) |
+| **Space Quiz** | 10-question interactive quiz with score tracking |
+| **Space Missions** | Scrollable mission timeline with real mission data |
+| **Glassmorphism UI** | Blur-glass panels, glow effects, gradient borders throughout |
+| **Procedural Textures** | All planet textures generated in-browser — no external assets needed |
+| **Responsive Design** | Works on desktop, tablet, and mobile |
+
+</div>
 
 ---
 
-## 🚀 Quick Start
+## 🪐 Planets
 
-### Prerequisites
-- Node.js 18+ (LTS recommended)
-- npm 9+
+<div align="center">
 
-### Install & Run
+| 🟤 Mercury | 🟡 Venus | 🔵 Earth | 🔴 Mars |
+|:---:|:---:|:---:|:---:|
+| Smallest world | Hottest planet | Our home | The Red Planet |
+| −180 to 430 °C | 465 °C avg | −88 to 58 °C | −153 to 20 °C |
+| 0 moons | 0 moons | 1 moon | 2 moons |
+
+| 🟠 Jupiter | 🟡 Saturn | 🩵 Uranus | 🔷 Neptune |
+|:---:|:---:|:---:|:---:|
+| Largest planet | Ring master | Ice giant | Windiest world |
+| 620 km/h winds | 146 moons | 97.8° tilt | 2,100 km/h winds |
+| 95 moons | Floats on water | 28 moons | 16 moons |
+
+</div>
+
+---
+
+## ⚙️ Installation
 
 ```bash
-# Clone or copy the project
+# 1. Clone the repository
+git clone https://github.com/professyzenith/cosmic-odyssey.git
+
+# 2. Navigate into the project
 cd cosmic-odyssey
 
-# Install dependencies
+# 3. Install dependencies
 npm install
 
-# Start dev server (opens at http://localhost:5173)
+# 4. Start the development server
 npm run dev
 ```
+
+Then open **http://localhost:5173** in your browser. 🚀
 
 ### Build for Production
 
 ```bash
 npm run build
-# Output in ./dist — ready to deploy
-```
-
-### Preview Production Build
-
-```bash
 npm run preview
-# Serves dist/ at http://localhost:4173
 ```
 
 ---
 
-## 📁 Project Structure
+## 🗂️ Project Structure
 
 ```
 cosmic-odyssey/
-├── index.html                    # Entry HTML with loading screen
-├── package.json
-├── vite.config.js
-├── public/
-│   ├── favicon.svg               # Custom SVG favicon
-│   ├── robots.txt                # SEO robots
-│   └── sitemap.xml               # SEO sitemap
-└── src/
-    ├── main.js                   # App orchestrator / boot
-    ├── data/
-    │   └── planets.js            # All planet data, mission data, facts
-    ├── styles/
-    │   └── main.css              # Complete stylesheet (CSS variables, all components)
-    ├── components/
-    │   ├── starfield.js          # Background animated starfield + nebulae + shooting stars
-    │   ├── solarSystem.js        # Hero solar system canvas renderer
-    │   ├── planetRenderer.js     # Per-planet 3D-style canvas with surface detail
-    │   ├── quiz.js               # Quiz questions + interactive quiz component
-    │   ├── calculator.js         # Distance calculator + planet compare tool
-    │   ├── search.js             # Planet search overlay (Ctrl+K)
-    │   └── favorites.js          # Bookmark/favorites system with localStorage
-    └── utils/
-        └── scroll.js             # Scroll animator, parallax, countUp, staggerReveal
+├── 📁 src/
+│   ├── main.js              # Entry point — scene setup, planet logic
+│   └── ...                  # Modules for audio, quiz, timeline, textures
+├── index.html               # App shell
+├── vite.config.js           # Vite configuration
+├── package.json             # Dependencies & scripts
+└── README.md
 ```
 
 ---
 
-## 🎨 Design System
+## 🛠️ Tech Stack
 
-### Color Palette
+<div align="center">
 
-| Variable | Value | Usage |
-|---|---|---|
-| `--cyan` | `#00E5FF` | Primary accent, labels, glow |
-| `--purple` | `#6A5CFF` | Secondary, gradients |
-| `--mint` | `#00FFC6` | Success, highlights |
-| `--gold` | `#FFB820` | Sun, warnings |
-| `--bg` | `#02030A` | Base background |
-| `--white` | `#FFFFFF` | Primary text |
+| Technology | Purpose |
+|:---|:---|
+| **Three.js** | 3D planet rendering, orbit controls, procedural geometry |
+| **Vite** | Lightning-fast dev server & build tool |
+| **Web Audio API** | Synthesized planet sound signatures |
+| **Canvas 2D API** | Hero solar system orrery, cinematic intro |
+| **CSS Glassmorphism** | UI panels, cards, blur effects |
+| **Vanilla JS** | No framework overhead — pure performance |
 
-### Typography
-
-| Role | Font | Usage |
-|---|---|---|
-| Headings | **Orbitron** | All display text, nav, labels |
-| Body | **Inter** | Paragraphs, descriptions |
-| Numbers | **Space Grotesk** | Stats, data, counters |
+</div>
 
 ---
 
-## 🛰️ Planet Data
+## 🌌 Roadmap
 
-Each planet includes:
-- Full scientific overview paragraph
-- 12 stats (diameter, mass, gravity, density, temp, atmosphere, moons, orbital period, rotation, distance, speed, escape velocity)
-- Detailed moon descriptions
-- Historical missions list
-- Discovery history
-- Fun fact
-- Earth comparison
-- Habitability score (0–100)
-- Surface composition
-- Visual theme for canvas renderer
+- [x] 3D planet renderers with procedural textures
+- [x] Synthesized audio per planet
+- [x] Cinematic particle intro
+- [x] Space quiz with scoring
+- [x] Mission timeline
+- [ ] VR/WebXR support
+- [ ] Multiplayer solar system exploration
+- [ ] NASA API integration for live data
+- [ ] Mobile touch gestures for orbit control
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+## 🤝 Contributing
 
-| Key | Action |
-|---|---|
-| `Ctrl+K` / `⌘K` | Open planet search |
-| `Escape` | Close search overlay |
-| `Enter` on Begin button | Start the experience |
+Contributions are welcome! Feel free to open issues or pull requests.
 
----
-
-## 📱 Responsive Breakpoints
-
-| Breakpoint | Behavior |
-|---|---|
-| `> 900px` | Full two-column planet layouts |
-| `≤ 900px` | Single column, planet visual on top |
-| `≤ 540px` | Reduced stat grid, compact typography |
-
----
-
-## ♿ Accessibility
-
-- All interactive elements have `aria-label` attributes
-- `role` attributes on landmarks (main, nav, dialog, complementary)
-- Tab/keyboard navigable search and quiz
-- `prefers-reduced-motion` disables all animations
-- Color contrast ratios meet WCAG AA for text elements
-- Screen reader-only hints for decorative elements (`aria-hidden`)
-
----
-
-## ⚡ Performance
-
-- **Code splitting** via Vite manualChunks (starfield, solar, planet, quiz, calc bundles)
-- **Lazy rendering** — planet canvas renderers only start when scrolled into view (IntersectionObserver)
-- **Lazy iframe** — live model uses `loading="lazy"`
-- **RAF optimization** — all canvases use requestAnimationFrame and stop when off-screen
-- **Asset minimization** — Terser minification on build
-- **Zero heavy dependencies** — No Three.js bundle (~600KB saved). Pure Canvas 2D API
-- **CSS variables** — single token update changes the whole design system
-
----
-
-## 🚢 Deployment
-
-### Vercel
 ```bash
-npm i -g vercel
-vercel --prod
-```
-
-### Netlify
-```bash
-npm run build
-# Drag ./dist into Netlify dashboard
-# Or: netlify deploy --prod --dir=dist
-```
-
-### GitHub Pages
-```bash
-npm run build
-# Push ./dist to gh-pages branch
-# Or use GitHub Actions
-```
-
-### Docker
-```dockerfile
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY . .
-RUN npm ci && npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
+# Fork → Clone → Branch → Commit → Push → PR
+git checkout -b feature/your-amazing-feature
+git commit -m "✨ Add amazing feature"
+git push origin feature/your-amazing-feature
 ```
 
 ---
 
-## 🔭 Extending the Project
+## 👥 Contributors
 
-### Adding a new planet / dwarf planet
+<div align="center">
 
-1. Add entry to `src/data/planets.js` PLANETS array
-2. Add a case in `src/components/planetRenderer.js` `drawSurfaceFeatures()`
-3. Add nav link in `src/main.js` buildDOM() navbar
+[![mantisdarling](https://avatars.githubusercontent.com/mantisdarling?size=64)](https://github.com/mantisdarling)
+[![professyzenith](https://avatars.githubusercontent.com/professyzenith?size=64)](https://github.com/professyzenith)
 
-### Adding a mission
+**mantisdarling** &nbsp;&nbsp; **professyzenith**
 
-Add to `MISSIONS` array in `src/data/planets.js`
-
-### Adding quiz questions
-
-Add to `QUIZ_QUESTIONS` array in `src/components/quiz.js`
-
-### Swapping in real NASA textures
-
-Replace canvas drawing in `PlanetRenderer.drawBase()` with:
-```js
-const img = new Image();
-img.src = '/textures/earth.jpg'; // place in /public/textures/
-img.onload = () => ctx.drawImage(img, CX-R, CY-R, R*2, R*2);
-```
+</div>
 
 ---
 
-## 📡 Credits & Data Sources
+## 📄 License
 
-- Planet data: NASA Solar System Exploration (solarsystem.nasa.gov)
-- Live 3D model: SolarSystemScope.com
-- Fonts: Google Fonts (Orbitron, Inter, Space Grotesk)
-- Mission data: NASA, ESA, JAXA mission pages
+This project is open source. Data sourced from **NASA** public archives.
 
 ---
 
-## 📜 License
+<div align="center">
 
-MIT — Educational use. Not affiliated with NASA, ESA, or SpaceX.
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:4b0082,50:1a1a6e,100:0d0d2b&height=120&section=footer" width="100%"/>
 
----
+**Made with 🌙 and curiosity &nbsp;·&nbsp; Cosmic Odyssey &nbsp;·&nbsp; 2024**
 
 *"The cosmos is within us. We are made of star-stuff." — Carl Sagan*
+
+</div>
