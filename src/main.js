@@ -13,7 +13,7 @@ import { buildEducation } from './components/education.js';
 import { SolarSystem3D } from './components/spaceFlythrough.js';
 import { PLANETS, MISSIONS, SOLAR_SYSTEM_FACTS } from './data/planets.js';
 
-// ── Loading Screen ──────────────────────────────────────────
+// â”€â”€ Loading Screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const loadingEl = document.getElementById('loading-screen');
 const loadingBar = document.getElementById('loading-bar');
 const loadingText = document.getElementById('loading-text');
@@ -34,7 +34,7 @@ function advanceLoading(pct, text) {
   if (loadingText) loadingText.textContent = text;
 }
 
-// ── DOM Builder ─────────────────────────────────────────────
+// â”€â”€ DOM Builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildDOM() {
   advanceLoading(10, LOADING_STEPS[0]);
 
@@ -50,7 +50,7 @@ function buildDOM() {
 
     <!-- NAVIGATION -->
     <nav id="navbar" role="navigation" aria-label="Main navigation">
-      <span class="nav-logo">✦ COSMIC</span>
+      <span class="nav-logo">âœ¦ COSMIC</span>
       <div class="nav-divider" aria-hidden="true"></div>
       <a href="#hero" class="nav-item active">Home</a>
       <a href="#mercury" class="nav-item">Mercury</a>
@@ -75,7 +75,7 @@ function buildDOM() {
       <!-- HERO (LANDING + LIVE MODEL) -->
       <section id="hero" aria-label="Cosmic Odyssey Hero">
 
-        <!-- ── LANDING PANEL (full viewport) ── -->
+        <!-- â”€â”€ LANDING PANEL (full viewport) â”€â”€ -->
         <div class="co-landing">
           <div class="co-landing-bg" aria-hidden="true">
             <div class="co-nebula co-nebula-1"></div>
@@ -84,7 +84,7 @@ function buildDOM() {
           </div>
 
           <div class="co-landing-content">
-            <p class="co-eyebrow">✦ &nbsp;Interactive Experience&nbsp; ✦</p>
+            <p class="co-eyebrow">âœ¦ &nbsp;Interactive Experience&nbsp; âœ¦</p>
             <h1 class="co-headline">
               <span class="co-hl-line co-hl-1" style="font-size: 0.8em;">Welcome to</span>
               <span class="co-hl-line co-hl-2" style="font-size: 0.9em;">3D Journey</span>
@@ -93,7 +93,7 @@ function buildDOM() {
 
             <div class="co-cta-row">
               <button class="co-btn-primary" id="begin-explore-btn" onclick="document.querySelector('.live-frame-container').scrollIntoView({behavior:'smooth'})">
-                <span>⚡ Explore Model</span>
+                <span>âš¡ Explore Model</span>
               </button>
             </div>
           </div>
@@ -110,7 +110,7 @@ function buildDOM() {
           </div>
         </div>
 
-        <!-- ── LIVE SOLAR SYSTEM MODEL ── -->
+        <!-- â”€â”€ LIVE SOLAR SYSTEM MODEL â”€â”€ -->
         <div class="live-inner">
           <div class="section-header reveal">
             <p class="section-eyebrow">Real-Time Simulation</p>
@@ -123,9 +123,9 @@ function buildDOM() {
               <span class="live-label">Live Solar System Model</span>
               <div class="live-badge" aria-hidden="true">
                 <span>REAL-TIME</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span>INTERACTIVE</span>
-                <span>·</span>
+                <span>Â·</span>
                 <span>3D</span>
               </div>
             </div>
@@ -150,7 +150,7 @@ function buildDOM() {
                   onmouseover="this.style.background='rgba(255,80,80,0.2)';this.style.boxShadow='0 0 20px rgba(255,80,80,0.5)';"
                   onmouseout="this.style.background='rgba(0,0,0,0.85)';this.style.boxShadow='none';">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="10" y1="14" x2="3" y2="21"></line><line x1="21" y1="3" x2="14" y2="10"></line></svg>
-                  ✕ Exit Full Screen
+                  âœ• Exit Full Screen
                 </button>
                 <iframe
                   id="sss-iframe"
@@ -163,31 +163,31 @@ function buildDOM() {
                   style="border:none;display:block;width:100%;height:100%;"
                 ></iframe>
               </div>
-              <!-- Fallback panel — hidden by default, shown if iframe fails -->
+              <!-- Fallback panel â€” hidden by default, shown if iframe fails -->
               <div id="sss-fallback" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; padding:4rem 2rem; text-align:center; min-height:400px;">
-                <div style="font-size:48px; opacity:0.4;">🔭</div>
+                <div style="font-size:48px; opacity:0.4;">ðŸ”­</div>
                 <p style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--white); letter-spacing:0.1em;">Solar System Model Unavailable</p>
-                <p style="font-size:13px; color:rgba(255,255,255,0.5); max-width:400px; line-height:1.7;">The embedded model couldn't load — this is usually a temporary browser or network restriction. Open it directly in a new tab for the full experience.</p>
+                <p style="font-size:13px; color:rgba(255,255,255,0.5); max-width:400px; line-height:1.7;">The embedded model couldn't load â€” this is usually a temporary browser or network restriction. Open it directly in a new tab for the full experience.</p>
                 <a href="https://www.solarsystemscope.com" target="_blank" rel="noopener noreferrer"
                   style="display:inline-flex; align-items:center; gap:0.5rem; font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:0.25em; color:var(--bg); background:linear-gradient(135deg,var(--cyan),var(--purple)); border-radius:30px; padding:0.75rem 2rem; text-decoration:none; transition:transform 0.2s, box-shadow 0.2s;"
                   onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(0,229,255,0.4)'"
                   onmouseout="this.style.transform=''; this.style.boxShadow=''">
-                  ↗ OPEN SOLAR SYSTEM SCOPE
+                  â†— OPEN SOLAR SYSTEM SCOPE
                 </a>
                 <button onclick="document.getElementById('sss-iframe').src='https://www.solarsystemscope.com/iframe'; document.getElementById('sss-fallback').style.display='none'; document.getElementById('sss-iframe').style.display='block';"
                   style="font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:0.2em; color:rgba(255,255,255,0.4); background:none; border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:0.45rem 1.2rem; cursor:pointer;">
-                  ↺ RETRY
+                  â†º RETRY
                 </button>
               </div>
             </div>
             <div class="live-frame-bottom">
-              <span class="live-source">Data: Cosmic Odyssey · Positions updated in real-time</span>
+              <span class="live-source">Data: Cosmic Odyssey Â· Positions updated in real-time</span>
               <div class="live-actions">
                 <button id="audio-launch-btn" aria-label="Start ambient space music">
                   <span class="btn-pulse" aria-hidden="true"></span>
-                  <span id="audio-launch-label">♪ Start Ambient Music</span>
+                  <span id="audio-launch-label">â™ª Start Ambient Music</span>
                 </button>
-                <button class="live-btn" id="fullscreen-btn">⤢ FULL SCREEN</button>
+                <button class="live-btn" id="fullscreen-btn">â¤¢ FULL SCREEN</button>
               </div>
             </div>
             <div class="live-floating-labels">
@@ -242,7 +242,7 @@ function buildDOM() {
           <p class="fact-text" id="fact-text">Click the button to discover an amazing space fact.</p>
         </div>
         <button class="btn-primary" id="fact-btn" style="display:block;margin:1.5rem auto 0">
-          <span>✦ Generate Fact</span>
+          <span>âœ¦ Generate Fact</span>
         </button>
       </section>
 
@@ -278,12 +278,12 @@ function buildDOM() {
           <div class="section-header reveal">
             <p class="section-eyebrow">Become A Space Explorer</p>
             <h2 class="section-title">Learn The Cosmos</h2>
-            <p class="section-subtitle">Three levels of cosmic knowledge — pick your path</p>
+            <p class="section-subtitle">Three levels of cosmic knowledge â€” pick your path</p>
           </div>
           <div class="edu-tabs reveal">
-            <button class="edu-tab active" data-level="beginner">🌟 Beginner</button>
-            <button class="edu-tab" data-level="intermediate">🔭 Intermediate</button>
-            <button class="edu-tab" data-level="advanced">⚛️ Advanced</button>
+            <button class="edu-tab active" data-level="beginner">ðŸŒŸ Beginner</button>
+            <button class="edu-tab" data-level="intermediate">ðŸ”­ Intermediate</button>
+            <button class="edu-tab" data-level="advanced">âš›ï¸ Advanced</button>
           </div>
           <div id="edu-cards-beginner" class="edu-level active">
             <div class="edu-grid" id="edu-grid-beginner"></div>
@@ -306,7 +306,7 @@ function buildDOM() {
           <div>
             <div class="footer-brand-name">COSMIC ODYSSEY</div>
             <p class="footer-tagline">Welcome to the imaginary world<br>of the Solar System.<br>Explore. Discover. Wonder.</p>
-            <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:0.75rem;letter-spacing:0.05em">Educational · Non-commercial<br>Inspired by NASA & ESA</p>
+            <p style="font-size:11px;color:rgba(255,255,255,0.2);margin-top:0.75rem;letter-spacing:0.05em">Educational Â· Non-commercial<br>Inspired by NASA & ESA</p>
           </div>
           <div class="footer-col">
             <h4>Explore</h4>
@@ -341,15 +341,15 @@ function buildDOM() {
           </div>
         </div>
         <div class="footer-bottom">
-          <span class="footer-copy">© 2025 Cosmic Odyssey · Educational Project · All rights reserved</span>
-          <span class="footer-copy footer-love">Made with ✦ for the cosmos</span>
+          <span class="footer-copy">Â© 2025 Cosmic Odyssey Â· Educational Project Â· All rights reserved</span>
+          <span class="footer-copy footer-love">Made with âœ¦ for the cosmos</span>
         </div>
       </footer>
     </div>
   `;
 }
 
-// ── Planets HTML ─────────────────────────────────────────────
+// â”€â”€ Planets HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildPlanets() {
   advanceLoading(30, LOADING_STEPS[1]);
   const container = document.getElementById('planets-container');
@@ -390,7 +390,7 @@ function buildPlanets() {
 
         <!-- Info -->
         <div class="planet-info reveal-${isOdd ? 'right' : 'left'}">
-          <div class="planet-eyebrow">Solar System · Planet ${p.order}</div>
+          <div class="planet-eyebrow">Solar System Â· Planet ${p.order}</div>
           <h2 class="planet-name-display" style="--planet-color:${p.color}">${p.name}</h2>
           <span class="planet-type-tag" style="--planet-color:${p.color}">${p.type}</span>
           <p class="planet-overview">${p.overview}</p>
@@ -419,7 +419,7 @@ function buildPlanets() {
             </div>
             <div id="${p.id}-overview" class="tab-content active" role="tabpanel">
               <div class="fun-fact-card">
-                <p class="ff-label">✦ Fun Fact</p>
+                <p class="ff-label">âœ¦ Fun Fact</p>
                 <p>${p.funFact}</p>
               </div>
               <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:0.75rem;letter-spacing:0.05em">
@@ -432,7 +432,7 @@ function buildPlanets() {
               <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.65">${p.discovery}</p>
               <div style="margin-top:0.75rem;padding:0.75rem;background:rgba(106,92,255,0.06);border:1px solid rgba(106,92,255,0.15);border-radius:10px">
                 <p style="font-size:11px;font-family:'Orbitron',sans-serif;letter-spacing:0.2em;color:rgba(106,92,255,0.8);margin-bottom:0.3rem">COMPOSITION</p>
-                <p style="font-size:12px;color:rgba(255,255,255,0.5)">${p.composition.join(' · ')}</p>
+                <p style="font-size:12px;color:rgba(255,255,255,0.5)">${p.composition.join(' Â· ')}</p>
               </div>
             </div>
           </div>
@@ -444,7 +444,7 @@ function buildPlanets() {
   });
 }
 
-// ── Missions HTML ────────────────────────────────────────────
+// â”€â”€ Missions HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function buildMissions() {
   advanceLoading(50, LOADING_STEPS[2]);
   const grid = document.getElementById('missions-grid');
@@ -453,9 +453,9 @@ function buildMissions() {
     card.className = 'mission-card reveal';
     const isComplete = m.status.includes('Complete');
     card.innerHTML = `
-      <span class="mc-status${isComplete ? ' complete' : ''}">${isComplete ? '✓ COMPLETE' : '⦿ ACTIVE'}</span>
+      <span class="mc-status${isComplete ? ' complete' : ''}">${isComplete ? 'âœ“ COMPLETE' : 'â¦¿ ACTIVE'}</span>
       <div class="mc-name">${m.name}</div>
-      <div class="mc-agency">${m.agency} · ${m.launched}</div>
+      <div class="mc-agency">${m.agency} Â· ${m.launched}</div>
       <p class="mc-desc">${m.description}</p>
       <div class="mc-targets">${m.targets.map(t => `<span class="mc-target">${t}</span>`).join('')}</div>
       <div class="mc-highlight">${m.highlight}</div>
@@ -464,21 +464,21 @@ function buildMissions() {
   });
 }
 
-// ── Timeline ─────────────────────────────────────────────────
+// â”€â”€ Timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TIMELINE_EVENTS = [
   { year: '4.6 Bya', event: 'Formation of the Solar System', desc: 'A cloud of gas and dust collapses under gravity, forming the Sun and protoplanetary disk.' },
   { year: '3000 BCE', event: 'Ancient Astronomy', desc: 'Babylonians and Egyptians track planetary movements, creating the first star catalogs.' },
-  { year: '270 BCE', event: 'Aristarchus — Heliocentric Model', desc: 'Ancient Greek astronomer proposes the Sun is at the center of the Solar System, 1800 years ahead of his time.' },
+  { year: '270 BCE', event: 'Aristarchus â€” Heliocentric Model', desc: 'Ancient Greek astronomer proposes the Sun is at the center of the Solar System, 1800 years ahead of his time.' },
   { year: '1543', event: 'Copernican Revolution', desc: 'Nicolaus Copernicus publishes his heliocentric model of the Solar System in De revolutionibus.' },
   { year: '1610', event: 'Galileo\'s Telescope Discoveries', desc: 'Galileo discovers Jupiter\'s moons, Saturn\'s rings, and phases of Venus, confirming heliocentrism.' },
   { year: '1687', event: 'Newton\'s Law of Gravitation', desc: 'Isaac Newton publishes Principia Mathematica, explaining planetary motion through universal gravitation.' },
   { year: '1846', event: 'Neptune Discovered', desc: 'Neptune predicted mathematically by Adams and Le Verrier, then discovered by Galle exactly where predicted.' },
-  { year: '1957', event: 'Space Age Begins', desc: 'Soviet Union launches Sputnik 1 — the first artificial satellite to orbit Earth.' },
-  { year: '1969', event: 'Humans on the Moon', desc: 'Apollo 11 lands Neil Armstrong and Buzz Aldrin on the Moon — humanity\'s greatest exploratory achievement.' },
+  { year: '1957', event: 'Space Age Begins', desc: 'Soviet Union launches Sputnik 1 â€” the first artificial satellite to orbit Earth.' },
+  { year: '1969', event: 'Humans on the Moon', desc: 'Apollo 11 lands Neil Armstrong and Buzz Aldrin on the Moon â€” humanity\'s greatest exploratory achievement.' },
   { year: '1977', event: 'Voyager Grand Tour', desc: 'Voyager 1 & 2 launched to explore the outer Solar System using a rare planetary alignment.' },
   { year: '1990', event: 'Hubble Space Telescope', desc: 'Hubble begins its mission, transforming our view of the universe with unprecedented deep-field images.' },
   { year: '2006', event: 'Pluto Reclassified', desc: 'IAU redefines "planet," demoting Pluto to dwarf planet status after Eris is discovered.' },
-  { year: '2021', event: 'James Webb Space Telescope', desc: 'JWST launched — the most powerful telescope ever built, able to see 13.5 billion years into the past.' },
+  { year: '2021', event: 'James Webb Space Telescope', desc: 'JWST launched â€” the most powerful telescope ever built, able to see 13.5 billion years into the past.' },
   { year: '2030s', event: 'Humans to Mars', desc: 'NASA\'s Artemis program and SpaceX plan crewed missions to return to the Moon and travel to Mars.' },
 ];
 
@@ -498,8 +498,8 @@ function buildTimeline() {
   });
 }
 
-// ── Intersect / Reveal ───────────────────────────────────────
-// ── Singleton reveal observer — call observeNewRevealElements() anytime ──────
+// â”€â”€ Intersect / Reveal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Singleton reveal observer â€” call observeNewRevealElements() anytime â”€â”€â”€â”€â”€â”€
 let _revealObserver = null;
 
 function initReveal() {
@@ -541,7 +541,7 @@ function observeNewRevealElements() {
   _observeAllReveal();
 }
 
-// ── Tabs ─────────────────────────────────────────────────────
+// â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initTabs() {
   document.querySelectorAll('.planet-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -559,7 +559,7 @@ function initTabs() {
   });
 }
 
-// ── Nav active state ─────────────────────────────────────────
+// â”€â”€ Nav active state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initNav() {
   const navbar = document.getElementById('navbar');
   const navItems = document.querySelectorAll('.nav-item');
@@ -583,7 +583,7 @@ function initNav() {
   }, { passive: true });
 }
 
-// ── Planet Renderers ─────────────────────────────────────────
+// â”€â”€ Planet Renderers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const planetRenderers = [];
 
 function initPlanetRenderers() {
@@ -610,7 +610,7 @@ function initPlanetRenderers() {
   document.querySelectorAll('[id^="planet-canvas-"]').forEach(c => rendererObs.observe(c));
 }
 
-// ── Hero Solar System ────────────────────────────────────────
+// â”€â”€ Hero Solar System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initHeroSolar() {
   advanceLoading(80, LOADING_STEPS[4]);
 
@@ -619,7 +619,7 @@ function initHeroSolar() {
   const iframe   = document.getElementById('sss-iframe');
   const fsWrapper = document.getElementById('sss-fs-wrapper');
 
-  // ─ Fullscreen: make the wrapper (not iframe) go fullscreen
+  // â”€ Fullscreen: make the wrapper (not iframe) go fullscreen
   // so our exit button stays visible as an overlay on top.
   function enterFullscreen() {
     if (!fsWrapper) return;
@@ -649,7 +649,7 @@ function initHeroSolar() {
   exitBtn?.addEventListener('click', exitFullscreen);
 }
 
-// ── Starfield ────────────────────────────────────────────────
+// â”€â”€ Starfield â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let starfield;
 function initStarfield() {
   const canvas = document.getElementById('starfield-canvas');
@@ -658,7 +658,7 @@ function initStarfield() {
   window.addEventListener('resize', () => starfield.resize(), { passive: true });
 }
 
-// ── Footer Stars ─────────────────────────────────────────────
+// â”€â”€ Footer Stars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initFooterStars() {
   const canvas = document.getElementById('footer-canvas');
   if (!canvas) return;
@@ -690,7 +690,7 @@ function initFooterStars() {
   })();
 }
 
-// ── Facts Generator ──────────────────────────────────────────
+// â”€â”€ Facts Generator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initFacts() {
   const factText = document.getElementById('fact-text');
   const factBtn  = document.getElementById('fact-btn');
@@ -708,7 +708,7 @@ function initFacts() {
   });
 }
 
-// ── Fullscreen iframe ─────────────────────────────────────────
+// â”€â”€ Fullscreen iframe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initFullscreen() {
   document.getElementById('fullscreen-btn')?.addEventListener('click', () => {
     const iframe = document.querySelector('#live iframe');
@@ -717,7 +717,7 @@ function initFullscreen() {
   });
 }
 
-// ── Intro → Main ──────────────────────────────────────────────
+// â”€â”€ Intro â†’ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initIntro() {
   const main   = document.getElementById('main-site');
   const navbar = document.getElementById('navbar');
@@ -758,14 +758,14 @@ function initIntro() {
   launch();
 }
 
-// ── Ambient Audio — Violin music + tiny on/off button ────────
+// â”€â”€ Ambient Audio â€” Violin music + tiny on/off button â”€â”€â”€â”€â”€â”€â”€â”€
 function initAudio() {
   const audio = new AmbientAudio();
   let musicStarted = false;
   let startPending = false;
   let isPlaying    = true; // optimistic: will be true once started
 
-  /* ── Tiny floating on/off button ── */
+  /* â”€â”€ Tiny floating on/off button â”€â”€ */
   const btn = document.createElement('button');
   btn.id = 'music-toggle-btn';
   btn.setAttribute('aria-label', 'Toggle violin music');
@@ -779,7 +779,7 @@ function initAudio() {
     </svg>
   `;
 
-  /* Inline style — tiny, minimal, bottom-left */
+  /* Inline style â€” tiny, minimal, bottom-left */
   Object.assign(btn.style, {
     position:       'fixed',
     bottom:         '1.5rem',
@@ -825,14 +825,14 @@ function initAudio() {
     btn.style.transform   = 'scale(1)';
   });
 
-  /* ── Start music on first user click anywhere ── */
+  /* â”€â”€ Start music on first user click anywhere â”€â”€ */
   async function startMusic() {
     if (musicStarted || startPending) return;
     startPending = true;
     try {
       await audio.start();
     } catch (err) {
-      console.warn('Cosmic Odyssey — Audio start failed:', err);
+      console.warn('Cosmic Odyssey â€” Audio start failed:', err);
       startPending = false;
       return;
     }
@@ -844,10 +844,10 @@ function initAudio() {
     const launchBtn   = document.getElementById('audio-launch-btn');
     const launchLabel = document.getElementById('audio-launch-label');
     if (launchBtn)   launchBtn.classList.add('playing');
-    if (launchLabel) launchLabel.textContent = '♪ Playing';
+    if (launchLabel) launchLabel.textContent = 'â™ª Playing';
   }
 
-  /* ── Toggle on click ── */
+  /* â”€â”€ Toggle on click â”€â”€ */
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     if (!musicStarted) {
@@ -864,7 +864,7 @@ function initAudio() {
     }
   });
 
-  /* ── Auto-start on first interaction anywhere ── */
+  /* â”€â”€ Auto-start on first interaction anywhere â”€â”€ */
   const _autoStart = (e) => {
     // Exclude iframe to avoid Cloudflare fingerprinting issues
     if (e.target.closest('iframe, #sss-iframe')) return;
@@ -873,7 +873,7 @@ function initAudio() {
   };
   document.addEventListener('click', _autoStart, { capture: true, passive: true });
 
-  /* ── Icon helpers ── */
+  /* â”€â”€ Icon helpers â”€â”€ */
   function _setOn() {
     document.getElementById('mtb-icon-on').style.display  = '';
     document.getElementById('mtb-icon-off').style.display = 'none';
@@ -891,7 +891,7 @@ function initAudio() {
   }
 }
 
-// ── Iframe load guard — detect Cloudflare challenge & activate fallback ──
+// â”€â”€ Iframe load guard â€” detect Cloudflare challenge & activate fallback â”€â”€
 function initIframeGuard() {
   const iframe   = document.getElementById('sss-iframe');
   const fallback = document.getElementById('sss-fallback');
@@ -924,7 +924,7 @@ function initIframeGuard() {
       }
     } catch {
       // Cross-origin block = iframe loaded correctly (expected behaviour).
-      // Do nothing — this is the success path.
+      // Do nothing â€” this is the success path.
     }
   }
 
@@ -947,7 +947,7 @@ function initIframeGuard() {
   }, 4000);
 }
 
-// ── Keyboard accessibility ────────────────────────────────────
+// â”€â”€ Keyboard accessibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function initKeyboard() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Enter' && document.activeElement.id === 'begin-btn') {
@@ -956,9 +956,9 @@ function initKeyboard() {
   });
 }
 
-// ── Main Boot ────────────────────────────────────────────────
+// â”€â”€ Main Boot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function boot() {
-  // _hideLoader is always called — even if something earlier throws.
+  // _hideLoader is always called â€” even if something earlier throws.
   const _hideLoader = () => {
     const loader = document.getElementById('loading-screen');
     if (loader) {
@@ -973,9 +973,12 @@ async function boot() {
     buildMissions();
     buildTimeline();
 
-    // NOTE: NASAGallery is initialised in initIntro() launch() — NOT here.
-    // Initialising it here caused #gallery-lightbox to exist in the DOM during
-    // the intro screen, intercepting all clicks via #glb-info.
+    // Initialize NASAGallery
+    const gc = document.getElementById('gallery-container');
+    if (gc) {
+      try { new NASAGallery(gc); } catch (e) { console.warn('Gallery:', e); }
+    }
+
     try { buildEducation(); } catch (e) { console.warn('Education init:', e); }
 
     // Calculator & Compare
@@ -1005,11 +1008,11 @@ async function boot() {
   } catch (err) {
     console.error('Cosmic Odyssey boot error:', err);
   } finally {
-    // Always remove loading screen — even if boot() threw
+    // Always remove loading screen â€” even if boot() threw
     _hideLoader();
   }
 
-  // These run after loader is hidden — safe even if boot had partial errors
+  // These run after loader is hidden â€” safe even if boot had partial errors
   initIntro();
   initFullscreen();
   initAudio();
@@ -1030,5 +1033,5 @@ async function boot() {
   }, 200);
 }
 
-// ── Kick off ─────────────────────────────────────────────────
+// â”€â”€ Kick off â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.addEventListener('DOMContentLoaded', boot);
