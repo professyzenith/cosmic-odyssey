@@ -1,20 +1,19 @@
 /* ═══════════════════════════════════════════════════════
    COSMIC ODYSSEY — Planet Renderer v2.0
-   Real NASA textures from solarsystemscope.com (free educational use)
+   Local NASA textures served from /public/textures/
    with procedural fallback + atmospheric glow + rotation animation
    ═══════════════════════════════════════════════════════ */
 
-// Real NASA/Solarsystemscope textures — free for educational use
-// Source: https://www.solarsystemscope.com/textures/
+// Local textures served from /public/textures/ — always loads, no hotlink blocking
 const TEXTURES = {
-  mercury: 'https://www.solarsystemscope.com/textures/download/2k_mercury.jpg',
-  venus:   'https://www.solarsystemscope.com/textures/download/2k_venus_surface.jpg',
-  earth:   'https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg',
-  mars:    'https://www.solarsystemscope.com/textures/download/2k_mars.jpg',
-  jupiter: 'https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg',
-  saturn:  'https://www.solarsystemscope.com/textures/download/2k_saturn.jpg',
-  uranus:  'https://www.solarsystemscope.com/textures/download/2k_uranus.jpg',
-  neptune: 'https://www.solarsystemscope.com/textures/download/2k_neptune.jpg',
+  mercury: '/textures/mercury.jpg',
+  venus:   '/textures/venus.jpg',
+  earth:   '/textures/earth.jpg',
+  mars:    '/textures/mars.jpg',
+  jupiter: '/textures/jupiter.jpg',
+  saturn:  '/textures/saturn.jpg',
+  uranus:  '/textures/uranus.jpg',
+  neptune: '/textures/neptune.jpg',
 };
 
 // Preload all textures at module level (shared across instances)
@@ -26,7 +25,6 @@ function loadTexture(id) {
   if (_texturePromises[id]) return _texturePromises[id];
   _texturePromises[id] = new Promise((resolve) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.onload  = () => { _textureCache[id] = img; resolve(img); };
     img.onerror = () => resolve(null); // graceful fallback to procedural
     img.src = TEXTURES[id];
@@ -149,11 +147,23 @@ export class PlanetRenderer {
     ctx.arc(CX, CY, R, 0, Math.PI * 2);
     ctx.clip();
 
-    // Base gradient
-    const grd = ctx.createRadialGradient(CX - R * 0.3, CY - R * 0.3, 0, CX, CY, R);
-    grd.addColorStop(0, this.lighten(p.color, 35));
-    grd.addColorStop(0.5, p.color);
-    grd.addColorStop(1, this.darken(p.color, 55));
+    // Planet-specific realistic base colors
+    const baseColors = {
+      saturn:  ['#c8a96e','#b8956a','#a07850'],
+      uranus:  ['#9fd4d8','#7ec8cc','#5ab0b8'],
+      neptune: ['#3b6ec8','#2a55b8','#1a3a8e'],
+    };
+    const bc = baseColors[p.id];
+    const grd = ctx.createLinearGradient(CX, CY - R, CX, CY + R);
+    if (bc) {
+      grd.addColorStop(0,   bc[0]);
+      grd.addColorStop(0.5, bc[1]);
+      grd.addColorStop(1,   bc[2]);
+    } else {
+      grd.addColorStop(0, this.lighten(p.color, 35));
+      grd.addColorStop(0.5, p.color);
+      grd.addColorStop(1, this.darken(p.color, 55));
+    }
     ctx.fillStyle = grd;
     ctx.fillRect(CX - R, CY - R, R * 2, R * 2);
 
@@ -373,48 +383,86 @@ export class PlanetRenderer {
   }
 
   drawSaturnSurface(shift) {
-    const { ctx, CX, CY, R } = this;
-    [{ y: 0.2, c: 'rgba(180,150,70,0.15)' },
-     { y: 0.45,c: 'rgba(200,170,90,0.12)' },
-     { y: 0.7, c: 'rgba(160,130,60,0.15)' }].forEach(b => {
+    // Photorealistic Saturn: golden cloud bands with subtle streaks
+    const { ctx, CX, CY, R, t } = this;
+    const bands = [
+      { y: 0.08, h: 0.06, c: 'rgba(210,180,100,0.35)' },
+      { y: 0.18, h: 0.04, c: 'rgba(180,150,70,0.25)' },
+      { y: 0.28, h: 0.08, c: 'rgba(200,165,85,0.30)' },
+      { y: 0.42, h: 0.05, c: 'rgba(155,125,55,0.28)' },
+      { y: 0.52, h: 0.07, c: 'rgba(220,190,110,0.32)' },
+      { y: 0.65, h: 0.05, c: 'rgba(170,140,65,0.25)' },
+      { y: 0.75, h: 0.07, c: 'rgba(195,160,80,0.30)' },
+      { y: 0.88, h: 0.05, c: 'rgba(165,135,60,0.22)' },
+    ];
+    bands.forEach(b => {
       const y = CY - R + b.y * R * 2;
-      const g = ctx.createLinearGradient(0, y - R * 0.06, 0, y + R * 0.06);
-      g.addColorStop(0,'transparent'); g.addColorStop(0.5,b.c); g.addColorStop(1,'transparent');
-      ctx.fillStyle = g; ctx.fillRect(CX - R, y - R * 0.07, R * 2, R * 0.14);
+      const g = ctx.createLinearGradient(0, y, 0, y + b.h * R * 2);
+      g.addColorStop(0,'transparent'); g.addColorStop(0.4, b.c); g.addColorStop(0.6, b.c); g.addColorStop(1,'transparent');
+      ctx.fillStyle = g;
+      ctx.fillRect(CX - R, y, R * 2, b.h * R * 2);
     });
+    // Subtle polar whitening
+    const polar = ctx.createRadialGradient(CX, CY - R * 0.85, 0, CX, CY - R * 0.85, R * 0.5);
+    polar.addColorStop(0, 'rgba(240,225,180,0.4)'); polar.addColorStop(1, 'transparent');
+    ctx.fillStyle = polar; ctx.fillRect(CX - R, CY - R, R * 2, R * 0.4);
   }
 
   drawUranus(shift) {
-    const { ctx, CX, CY, R } = this;
-    ctx.globalAlpha = 0.15;
-    for (let i = 0; i < 12; i++) {
-      const angle = (i / 12) * Math.PI * 2 + shift * 0.005;
-      const rr = R * (0.3 + 0.6 * (Math.sin(i * 1.5) * 0.5 + 0.5));
-      ctx.fillStyle = 'rgba(180,255,255,0.8)';
-      ctx.beginPath();
-      ctx.arc(CX + Math.cos(angle) * rr, CY + Math.sin(angle) * rr, R * 0.025, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
+    // Photorealistic Uranus: smooth icy blue-green with faint banding
+    const { ctx, CX, CY, R, t } = this;
+    // Subtle latitudinal bands
+    const bands = [
+      { y: 0.05, h: 0.12, c: 'rgba(200,240,245,0.20)' },
+      { y: 0.30, h: 0.08, c: 'rgba(100,200,210,0.12)' },
+      { y: 0.55, h: 0.10, c: 'rgba(80,185,200,0.14)' },
+      { y: 0.75, h: 0.12, c: 'rgba(60,170,185,0.12)' },
+    ];
+    bands.forEach(b => {
+      const y = CY - R + b.y * R * 2;
+      const g = ctx.createLinearGradient(0, y, 0, y + b.h * R * 2);
+      g.addColorStop(0,'transparent'); g.addColorStop(0.5, b.c); g.addColorStop(1,'transparent');
+      ctx.fillStyle = g; ctx.fillRect(CX - R, y, R * 2, b.h * R * 2);
+    });
+    // Polar white cap
+    const polar = ctx.createRadialGradient(CX, CY - R * 0.8, 0, CX, CY - R * 0.8, R * 0.55);
+    polar.addColorStop(0, 'rgba(220,245,248,0.45)'); polar.addColorStop(1, 'transparent');
+    ctx.fillStyle = polar; ctx.fillRect(CX - R, CY - R, R * 2, R * 0.45);
   }
 
   drawNeptune(shift) {
+    // Photorealistic Neptune: deep cobalt blue with Great Dark Spot + white cloud streaks
     const { ctx, CX, CY, R, t } = this;
-    const sx = CX + R * 0.1 + Math.sin(t * 0.02) * R * 0.08;
-    const sy = CY - R * 0.15;
-    ctx.globalAlpha = 0.55;
-    const spot = ctx.createRadialGradient(sx, sy, 0, sx, sy, R * 0.22);
-    spot.addColorStop(0, 'rgba(10,20,100,0.9)'); spot.addColorStop(1, 'transparent');
+    // Dynamic cloud bands
+    const bands = [
+      { y: 0.10, h: 0.06, c: 'rgba(80,120,220,0.30)' },
+      { y: 0.28, h: 0.05, c: 'rgba(50,90,200,0.25)' },
+      { y: 0.50, h: 0.07, c: 'rgba(100,140,230,0.22)' },
+      { y: 0.70, h: 0.05, c: 'rgba(60,100,210,0.20)' },
+    ];
+    bands.forEach(b => {
+      const y = CY - R + b.y * R * 2;
+      const g = ctx.createLinearGradient(0, y, 0, y + b.h * R * 2);
+      g.addColorStop(0,'transparent'); g.addColorStop(0.5, b.c); g.addColorStop(1,'transparent');
+      ctx.fillStyle = g; ctx.fillRect(CX - R, y, R * 2, b.h * R * 2);
+    });
+    // Great Dark Spot — drifts slowly
+    const sx = CX - R * 0.05 + Math.sin(t * 0.015) * R * 0.06;
+    const sy = CY - R * 0.18 + Math.cos(t * 0.012) * R * 0.03;
+    const spot = ctx.createRadialGradient(sx, sy, 0, sx, sy, R * 0.2);
+    spot.addColorStop(0, 'rgba(15,30,90,0.85)'); spot.addColorStop(0.6, 'rgba(20,40,110,0.5)'); spot.addColorStop(1, 'transparent');
     ctx.fillStyle = spot;
-    ctx.beginPath(); ctx.ellipse(sx, sy, R * 0.22, R * 0.14, -0.2, 0, Math.PI * 2); ctx.fill();
-    ctx.globalAlpha = 0.15;
-    for (let i = 0; i < 6; i++) {
-      const wy = CY - R * 0.6 + i * R * 0.22;
-      ctx.strokeStyle = 'rgba(130,160,255,0.8)'; ctx.lineWidth = R * 0.02;
+    ctx.save(); ctx.scale(1.5, 1);
+    ctx.beginPath(); ctx.arc(sx / 1.5, sy, R * 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    // White cloud streak companions
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = 'rgba(200,225,255,0.9)'; ctx.lineWidth = R * 0.018;
+    for (let i = 0; i < 4; i++) {
+      const wy = sy + R * (0.22 + i * 0.08);
       ctx.beginPath();
-      ctx.moveTo(CX - R * 0.8, wy + Math.sin(shift * 0.01 + i) * R * 0.04);
-      ctx.bezierCurveTo(CX - R * 0.3, wy + Math.sin(shift * 0.012 + i + 1) * R * 0.06,
-                        CX + R * 0.3, wy, CX + R * 0.8, wy + Math.sin(shift * 0.009 + i) * R * 0.05);
+      ctx.moveTo(CX - R * 0.55, wy + Math.sin(shift * 0.009 + i * 1.2) * R * 0.03);
+      ctx.bezierCurveTo(CX - R * 0.2, wy + Math.sin(shift * 0.011 + i) * R * 0.05, CX + R * 0.2, wy, CX + R * 0.55, wy + Math.sin(shift * 0.008 + i) * R * 0.04);
       ctx.stroke();
     }
     ctx.globalAlpha = 1;

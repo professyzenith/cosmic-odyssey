@@ -170,7 +170,8 @@ export class SolarSystemRenderer {
       ctx.translate(px, py);
       ctx.scale(1, 0.32);
       [{ r: pr * 1.55, w: 3.5, a: 0.5 }, { r: pr * 1.9, w: 2.5, a: 0.35 }, { r: pr * 2.25, w: 2, a: 0.22 }].forEach(ring => {
-        ctx.strokeStyle = `rgba(228,213,160,${ring.a})`;
+        // Darker back half for shadow effect
+        ctx.strokeStyle = `rgba(228,213,160,${ring.a * 0.4})`;
         ctx.lineWidth = ring.w * scale;
         ctx.beginPath();
         ctx.arc(0, 0, ring.r, Math.PI, 2 * Math.PI);
@@ -179,11 +180,24 @@ export class SolarSystemRenderer {
       ctx.restore();
     }
 
-    // Planet body
-    const bodyGrd = ctx.createRadialGradient(px - pr * 0.3, py - pr * 0.3, 0, px, py, pr);
-    bodyGrd.addColorStop(0, this.lighten(p.color, 40));
-    bodyGrd.addColorStop(0.6, p.color);
-    bodyGrd.addColorStop(1, this.darken(p.color, 40));
+    // Realistic Lighting: Calculate direction to Sun
+    const dx = CX - px;
+    const dy = CY - py;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const nx = dx / dist;
+    const ny = dy / dist;
+
+    // Highlight position (Sun-facing side)
+    const hx = px + nx * (pr * 0.5);
+    const hy = py + ny * (pr * 0.5);
+
+    // Planet body with realistic shadow terminator
+    const bodyGrd = ctx.createRadialGradient(hx, hy, 0, px, py, pr);
+    bodyGrd.addColorStop(0, this.lighten(p.color, 60)); // Bright sun reflection
+    bodyGrd.addColorStop(0.4, p.color);                 // True color
+    bodyGrd.addColorStop(0.75, this.darken(p.color, 60)); // Twilight zone
+    bodyGrd.addColorStop(1, '#050508');                 // Deep space shadow on the far side
+    
     ctx.fillStyle = bodyGrd;
     ctx.beginPath();
     ctx.arc(px, py, pr, 0, Math.PI * 2);
@@ -195,6 +209,7 @@ export class SolarSystemRenderer {
       ctx.translate(px, py);
       ctx.scale(1, 0.32);
       [{ r: pr * 1.55, w: 3.5, a: 0.5 }, { r: pr * 1.9, w: 2.5, a: 0.35 }, { r: pr * 2.25, w: 2, a: 0.22 }].forEach(ring => {
+        // Brighter front half
         ctx.strokeStyle = `rgba(228,213,160,${ring.a})`;
         ctx.lineWidth = ring.w * scale;
         ctx.beginPath();
