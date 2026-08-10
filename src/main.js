@@ -46,32 +46,7 @@ function buildDOM() {
   // Build intro
   document.getElementById('app').innerHTML = `
     <!-- INTRO -->
-    <div id="intro-screen" role="region" aria-label="Cosmic Odyssey Introduction">
-      <div id="intro-particles">
-        <div class="intro-nebula" style="width:600px;height:600px;background:radial-gradient(circle,rgba(106,92,255,0.2),transparent);top:-10%;left:-5%"></div>
-        <div class="intro-nebula" style="width:500px;height:500px;background:radial-gradient(circle,rgba(0,229,255,0.15),transparent);bottom:-5%;right:5%;animation-delay:-4s"></div>
-        <div class="intro-nebula" style="width:400px;height:400px;background:radial-gradient(circle,rgba(0,255,198,0.1),transparent);top:30%;right:10%;animation-delay:-2s"></div>
-      </div>
-      <p class="intro-badge">Cosmic Odyssey</p>
-      <h1 class="intro-heading">
-        <span class="line1">Welcome To The</span>
-        <span class="line2">Imaginary World</span>
-        <span class="line3">of the Solar System</span>
-      </h1>
-      <p class="intro-subline">A Journey Through Space & Time — 4.6 Billion Years in the Making</p>
-      <div class="intro-cta">
-        <button class="btn-primary" id="begin-btn" aria-label="Begin the cosmic journey">
-          <span>✦ BEGIN THE JOURNEY</span>
-        </button>
-        <button class="btn-secondary" id="explore-btn" aria-label="Jump to solar system explorer">
-          Explore Planets
-        </button>
-      </div>
-      <div class="intro-scroll-hint" aria-hidden="true">
-        <span>SCROLL TO EXPLORE</span>
-        <div class="scroll-line"></div>
-      </div>
-    </div>
+    <!-- (Intro screen completely removed as requested) -->
 
     <!-- NAVIGATION -->
     <nav id="navbar" role="navigation" aria-label="Main navigation">
@@ -92,43 +67,145 @@ function buildDOM() {
       <a href="#education" class="nav-item">Learn</a>
       <a href="#compare" class="nav-item">Compare</a>
       <a href="#quiz" class="nav-item">Quiz</a>
-      <a href="#live" class="nav-item">Live</a>
     </nav>
 
     <!-- MAIN SITE -->
     <div id="main-site" role="main">
 
-      <!-- HERO -->
-      <section id="hero" aria-label="Solar System 3D View">
-        <canvas id="hero-canvas" aria-hidden="true"></canvas>
-        <div class="hero-overlay" aria-hidden="true"></div>
-        
-        <!-- Simulation Controls -->
-        <div class="sim-controls" id="sim-controls" aria-label="Simulation controls">
-          <button id="sim-play" class="sim-btn" aria-label="Pause simulation">⏸ Pause</button>
-          <div class="sim-divider" aria-hidden="true"></div>
-          <div class="sim-slider-wrap">
-            <span class="sim-label">Orbit Warp</span>
-            <input type="range" id="sim-speed" min="0.1" max="10" step="0.1" value="1" aria-label="Simulation speed" />
-            <span class="sim-val" id="sim-speed-val">1.0x</span>
+      <!-- HERO (LANDING + LIVE MODEL) -->
+      <section id="hero" aria-label="Cosmic Odyssey Hero">
+
+        <!-- ── LANDING PANEL (full viewport) ── -->
+        <div class="co-landing">
+          <div class="co-landing-bg" aria-hidden="true">
+            <div class="co-nebula co-nebula-1"></div>
+            <div class="co-nebula co-nebula-2"></div>
+            <div class="co-nebula co-nebula-3"></div>
           </div>
-          <div class="sim-divider" aria-hidden="true"></div>
-          <button id="sim-trails" class="sim-btn active" aria-label="Toggle orbit trails">Orbit Trails</button>
+
+          <div class="co-landing-content">
+            <p class="co-eyebrow">✦ &nbsp;Interactive Experience&nbsp; ✦</p>
+            <h1 class="co-headline">
+              <span class="co-hl-line co-hl-1" style="font-size: 0.8em;">Welcome to</span>
+              <span class="co-hl-line co-hl-2" style="font-size: 0.9em;">3D Journey</span>
+            </h1>
+            <p class="co-tagline">Explore the Solar System in breathtaking real-time 3D.</p>
+
+            <div class="co-cta-row">
+              <button class="co-btn-primary" id="begin-explore-btn" onclick="document.querySelector('.live-frame-container').scrollIntoView({behavior:'smooth'})">
+                <span>⚡ Explore Model</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scroll cue -->
+          <div class="co-scroll-cue" aria-hidden="true">
+            <span class="co-scroll-text">Scroll to launch</span>
+            <div class="co-scroll-arrow">
+              <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+                <rect x="1" y="1" width="12" height="18" rx="6" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                <circle class="co-scroll-dot" cx="7" cy="6" r="2.5" fill="rgba(77,159,255,0.8)"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
-        <div class="hero-content">
-          <p class="hero-eyebrow">Our Cosmic Neighborhood</p>
-          <h2 class="hero-title">Solar System</h2>
-          <p class="hero-subtitle">8 Planets · 1 Star · Infinite Wonder</p>
-        </div>
-        <div id="planet-hover-card" class="planet-hover-card" aria-hidden="true">
-          <div class="phc-name" id="phc-name">—</div>
-          <div class="phc-type" id="phc-type">—</div>
-          <div class="phc-stat" id="phc-stat">—</div>
-        </div>
-        <div class="hero-scroll-cue" aria-hidden="true">
-          <span>SCROLL TO EXPLORE</span>
-          <div class="hero-scroll-arrow"></div>
+        <!-- ── LIVE SOLAR SYSTEM MODEL ── -->
+        <div class="live-inner">
+          <div class="section-header reveal">
+            <p class="section-eyebrow">Real-Time Simulation</p>
+            <h2 class="section-title">Explore The Solar System Live</h2>
+            <p class="section-subtitle">Interact with a real-time Solar System model</p>
+          </div>
+          <div class="live-frame-container reveal">
+            <div class="live-frame-top">
+              <div class="live-indicator" aria-hidden="true"></div>
+              <span class="live-label">Live Solar System Model</span>
+              <div class="live-badge" aria-hidden="true">
+                <span>REAL-TIME</span>
+                <span>·</span>
+                <span>INTERACTIVE</span>
+                <span>·</span>
+                <span>3D</span>
+              </div>
+            </div>
+            <div class="iframe-wrap" style="position:relative; width: 100%; height: 70vh; min-height: 600px;">
+              <!-- Floating fullscreen button always visible on iframe -->
+              <button
+                id="fullscreen-btn"
+                aria-label="Enter full screen"
+                style="position:absolute;top:12px;right:12px;z-index:10;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.7);border:1px solid rgba(0,229,255,0.5);color:#00e5ff;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:0.15em;padding:8px 16px;border-radius:4px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;text-transform:uppercase;"
+                onmouseover="this.style.background='rgba(0,229,255,0.15)';this.style.borderColor='#00e5ff';this.style.boxShadow='0 0 20px rgba(0,229,255,0.4)';"
+                onmouseout="this.style.background='rgba(0,0,0,0.7)';this.style.borderColor='rgba(0,229,255,0.5)';this.style.boxShadow='none';">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                Full Screen
+              </button>
+              <!-- Fullscreen wrapper: this DIV goes fullscreen so our exit button stays visible -->
+              <div id="sss-fs-wrapper" style="position:relative;width:100%; height:100%;">
+                <!-- Exit fullscreen button - inside the wrapper so it's visible during fullscreen -->
+                <button
+                  id="exit-fullscreen-btn"
+                  aria-label="Exit full screen"
+                  style="display:none;position:absolute;top:16px;right:16px;z-index:9999;align-items:center;gap:6px;background:rgba(0,0,0,0.85);border:1px solid rgba(255,80,80,0.6);color:#ff5050;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:0.15em;padding:10px 18px;border-radius:4px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s;text-transform:uppercase;"
+                  onmouseover="this.style.background='rgba(255,80,80,0.2)';this.style.boxShadow='0 0 20px rgba(255,80,80,0.5)';"
+                  onmouseout="this.style.background='rgba(0,0,0,0.85)';this.style.boxShadow='none';">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="10" y1="14" x2="3" y2="21"></line><line x1="21" y1="3" x2="14" y2="10"></line></svg>
+                  ✕ Exit Full Screen
+                </button>
+                <iframe
+                  id="sss-iframe"
+                  src="https://www.solarsystemscope.com/iframe"
+                  title="Interactive real-time Solar System model"
+                  allowfullscreen
+                  allow="fullscreen; autoplay"
+                  referrerpolicy="no-referrer"
+                  aria-label="3D Solar System Simulation"
+                  style="border:none;display:block;width:100%;height:100%;"
+                ></iframe>
+              </div>
+              <!-- Fallback panel — hidden by default, shown if iframe fails -->
+              <div id="sss-fallback" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; padding:4rem 2rem; text-align:center; min-height:400px;">
+                <div style="font-size:48px; opacity:0.4;">🔭</div>
+                <p style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--white); letter-spacing:0.1em;">Solar System Model Unavailable</p>
+                <p style="font-size:13px; color:rgba(255,255,255,0.5); max-width:400px; line-height:1.7;">The embedded model couldn't load — this is usually a temporary browser or network restriction. Open it directly in a new tab for the full experience.</p>
+                <a href="https://www.solarsystemscope.com" target="_blank" rel="noopener noreferrer"
+                  style="display:inline-flex; align-items:center; gap:0.5rem; font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:0.25em; color:var(--bg); background:linear-gradient(135deg,var(--cyan),var(--purple)); border-radius:30px; padding:0.75rem 2rem; text-decoration:none; transition:transform 0.2s, box-shadow 0.2s;"
+                  onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(0,229,255,0.4)'"
+                  onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                  ↗ OPEN SOLAR SYSTEM SCOPE
+                </a>
+                <button onclick="document.getElementById('sss-iframe').src='https://www.solarsystemscope.com/iframe'; document.getElementById('sss-fallback').style.display='none'; document.getElementById('sss-iframe').style.display='block';"
+                  style="font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:0.2em; color:rgba(255,255,255,0.4); background:none; border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:0.45rem 1.2rem; cursor:pointer;">
+                  ↺ RETRY
+                </button>
+              </div>
+            </div>
+            <div class="live-frame-bottom">
+              <span class="live-source">Data: Cosmic Odyssey · Positions updated in real-time</span>
+              <div class="live-actions">
+                <button id="audio-launch-btn" aria-label="Start ambient space music">
+                  <span class="btn-pulse" aria-hidden="true"></span>
+                  <span id="audio-launch-label">♪ Start Ambient Music</span>
+                </button>
+                <button class="live-btn" id="fullscreen-btn">⤢ FULL SCREEN</button>
+              </div>
+            </div>
+            <div class="live-floating-labels">
+              ${[
+                { color: '#FFB820', label: 'Sun & Planets' },
+                { color: '#00FFC6', label: 'Real-Time Orbits' },
+                { color: '#6A5CFF', label: 'Gravitational Data' },
+                { color: '#00E5FF', label: 'Live Distances' },
+                { color: '#B5B5B5', label: 'Moon Phases' },
+                { color: '#E8C56B', label: 'Ecliptic Plane' },
+              ].map(f => `
+                <div class="lfloat">
+                  <div class="lfloat-dot" style="background:${f.color};box-shadow:0 0 6px ${f.color}"></div>
+                  <span class="lfloat-text">${f.label}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -220,82 +297,7 @@ function buildDOM() {
         </div>
       </section>
 
-      <!-- LIVE MODEL -->
-      <section id="live" aria-label="Live Solar System Model">
-        <div class="live-inner">
-          <div class="section-header reveal">
-            <p class="section-eyebrow">Real-Time Simulation</p>
-            <h2 class="section-title">Explore The Solar System Live</h2>
-            <p class="section-subtitle">Interact with a real-time Solar System model</p>
-          </div>
-          <div class="live-frame-container reveal">
-            <div class="live-frame-top">
-              <div class="live-indicator" aria-hidden="true"></div>
-              <span class="live-label">Live Solar System Model</span>
-              <div class="live-badge" aria-hidden="true">
-                <span>REAL-TIME</span>
-                <span>·</span>
-                <span>INTERACTIVE</span>
-                <span>·</span>
-                <span>3D</span>
-              </div>
-            </div>
-            <div class="iframe-wrap">
-              <iframe
-                id="sss-iframe"
-                src="https://www.solarsystemscope.com/iframe"
-                title="Interactive real-time Solar System model"
-                allowfullscreen
-                allow="fullscreen; autoplay"
-                referrerpolicy="no-referrer"
-                aria-label="3D Solar System Simulation"
-                style="border:none; display:block; width:100%; min-height:600px; height:80vh;"
-              ></iframe>
-              <!-- Fallback panel — hidden by default, shown if iframe fails -->
-              <div id="sss-fallback" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; padding:4rem 2rem; text-align:center; min-height:400px;">
-                <div style="font-size:48px; opacity:0.4;">🔭</div>
-                <p style="font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--white); letter-spacing:0.1em;">Solar System Model Unavailable</p>
-                <p style="font-size:13px; color:rgba(255,255,255,0.5); max-width:400px; line-height:1.7;">The embedded model couldn't load — this is usually a temporary browser or network restriction. Open it directly in a new tab for the full experience.</p>
-                <a href="https://www.solarsystemscope.com" target="_blank" rel="noopener noreferrer"
-                  style="display:inline-flex; align-items:center; gap:0.5rem; font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:0.25em; color:var(--bg); background:linear-gradient(135deg,var(--cyan),var(--purple)); border-radius:30px; padding:0.75rem 2rem; text-decoration:none; transition:transform 0.2s, box-shadow 0.2s;"
-                  onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 30px rgba(0,229,255,0.4)'"
-                  onmouseout="this.style.transform=''; this.style.boxShadow=''">
-                  ↗ OPEN SOLAR SYSTEM SCOPE
-                </a>
-                <button onclick="document.getElementById('sss-iframe').src='https://www.solarsystemscope.com/iframe'; document.getElementById('sss-fallback').style.display='none'; document.getElementById('sss-iframe').style.display='block';"
-                  style="font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:0.2em; color:rgba(255,255,255,0.4); background:none; border:1px solid rgba(255,255,255,0.1); border-radius:20px; padding:0.45rem 1.2rem; cursor:pointer;">
-                  ↺ RETRY
-                </button>
-              </div>
-            </div>
-            <div class="live-frame-bottom">
-              <span class="live-source">Data: solarsystemscope.com · Positions updated in real-time</span>
-              <div class="live-actions">
-                <button id="audio-launch-btn" aria-label="Start ambient space music">
-                  <span class="btn-pulse" aria-hidden="true"></span>
-                  <span id="audio-launch-label">♪ Start Ambient Music</span>
-                </button>
-                <button class="live-btn" id="fullscreen-btn">⤢ FULL SCREEN</button>
-              </div>
-            </div>
-            <div class="live-floating-labels">
-              ${[
-                { color: '#FFB820', label: 'Sun & Planets' },
-                { color: '#00FFC6', label: 'Real-Time Orbits' },
-                { color: '#6A5CFF', label: 'Gravitational Data' },
-                { color: '#00E5FF', label: 'Live Distances' },
-                { color: '#B5B5B5', label: 'Moon Phases' },
-                { color: '#E8C56B', label: 'Ecliptic Plane' },
-              ].map(f => `
-                <div class="lfloat">
-                  <div class="lfloat-dot" style="background:${f.color};box-shadow:0 0 6px ${f.color}"></div>
-                  <span class="lfloat-text">${f.label}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <!-- FOOTER -->
       <footer role="contentinfo">
@@ -611,85 +613,40 @@ function initPlanetRenderers() {
 // ── Hero Solar System ────────────────────────────────────────
 function initHeroSolar() {
   advanceLoading(80, LOADING_STEPS[4]);
-  const canvas = document.getElementById('hero-canvas');
-  if (!canvas) return;
 
-  const solar = new SolarSystemRenderer(canvas);
-  solar.start();
+  const fsBtn    = document.getElementById('fullscreen-btn');
+  const exitBtn  = document.getElementById('exit-fullscreen-btn');
+  const iframe   = document.getElementById('sss-iframe');
+  const fsWrapper = document.getElementById('sss-fs-wrapper');
 
-  // ── Simulation Control Event Listeners ──
-  const playBtn = document.getElementById('sim-play');
-  const speedSlider = document.getElementById('sim-speed');
-  const speedVal = document.getElementById('sim-speed-val');
-  const trailsBtn = document.getElementById('sim-trails');
+  // ─ Fullscreen: make the wrapper (not iframe) go fullscreen
+  // so our exit button stays visible as an overlay on top.
+  function enterFullscreen() {
+    if (!fsWrapper) return;
+    if (fsWrapper.requestFullscreen)            fsWrapper.requestFullscreen();
+    else if (fsWrapper.webkitRequestFullscreen) fsWrapper.webkitRequestFullscreen();
+    else if (fsWrapper.msRequestFullscreen)     fsWrapper.msRequestFullscreen();
+  }
 
-  playBtn?.addEventListener('click', () => {
-    const isPlaying = solar.togglePlay();
-    if (playBtn) {
-      playBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
-      playBtn.classList.toggle('paused', !isPlaying);
-    }
-  });
+  function exitFullscreen() {
+    if      (document.exitFullscreen)            document.exitFullscreen();
+    else if (document.webkitExitFullscreen)      document.webkitExitFullscreen();
+    else if (document.msExitFullscreen)          document.msExitFullscreen();
+  }
 
-  speedSlider?.addEventListener('input', (e) => {
-    const val = e.target.value;
-    solar.setSpeed(val);
-    if (speedVal) speedVal.textContent = parseFloat(val).toFixed(1) + 'x';
-  });
+  // When fullscreen is active: show exit button.
+  // When leaving fullscreen: hide exit button.
+  function onFullscreenChange() {
+    const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+    if (exitBtn) exitBtn.style.display = isFS ? 'flex' : 'none';
+  }
 
-  trailsBtn?.addEventListener('click', () => {
-    const showTrails = solar.toggleTrails();
-    if (trailsBtn) {
-      trailsBtn.classList.toggle('active', showTrails);
-    }
-  });
+  document.addEventListener('fullscreenchange',       onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+  document.addEventListener('msfullscreenchange',     onFullscreenChange);
 
-  const hoverCard = document.getElementById('planet-hover-card');
-  const phcName = document.getElementById('phc-name');
-  const phcType = document.getElementById('phc-type');
-  const phcStat = document.getElementById('phc-stat');
-
-  canvas.style.pointerEvents = 'auto';
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const planet = solar.hitTest(mx, my);
-    if (planet) {
-      solar.hovered = planet.id;
-      canvas.style.cursor = 'pointer';
-      hoverCard.classList.add('visible');
-      phcName.textContent = planet.name;
-      phcType.textContent = planet.type;
-      const fullPlanet = PLANETS.find(p => p.id === planet.id);
-      phcStat.textContent = fullPlanet ? `Orbit: ${fullPlanet.stats.orbitalPeriod}` : '';
-      hoverCard.style.left = (e.clientX + 16) + 'px';
-      hoverCard.style.top  = (e.clientY - 20) + 'px';
-    } else {
-      solar.hovered = null;
-      canvas.style.cursor = 'default';
-      hoverCard.classList.remove('visible');
-    }
-  });
-
-  canvas.addEventListener('click', e => {
-    const rect = canvas.getBoundingClientRect();
-    const planet = solar.hitTest(e.clientX - rect.left, e.clientY - rect.top);
-    if (planet) {
-      document.getElementById(planet.id)?.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
-
-  canvas.addEventListener('mouseleave', () => {
-    solar.hovered = null;
-    hoverCard.classList.remove('visible');
-  });
-
-  window.addEventListener('resize', () => {
-    solar.resize();
-    solar.CX = solar.W / 2;
-    solar.CY = solar.H / 2;
-  }, { passive: true });
+  fsBtn?.addEventListener('click',  enterFullscreen);
+  exitBtn?.addEventListener('click', exitFullscreen);
 }
 
 // ── Starfield ────────────────────────────────────────────────
@@ -762,13 +719,8 @@ function initFullscreen() {
 
 // ── Intro → Main ──────────────────────────────────────────────
 function initIntro() {
-  const intro  = document.getElementById('intro-screen');
   const main   = document.getElementById('main-site');
   const navbar = document.getElementById('navbar');
-
-  // Enable CTA buttons after animations settle
-  const cta = intro?.querySelector('.intro-cta');
-  if (cta) setTimeout(() => cta.classList.add('ready'), 2500);
 
   let galleryInited = false;
   function initGalleryOnce() {
@@ -787,38 +739,23 @@ function initIntro() {
     navbar.classList.add('visible');
     initHeroSolar();
     initGalleryOnce();
-    intro.style.display = 'none';
   }
 
   function launch() {
     if (launched) return;
     launched = true;
 
-    /* Fade out intro screen */
-    intro.classList.add('exit');
     document.body.style.overflow = 'hidden';
 
-    /* Build 3D solar system scene */
+    /* Build 3D solar system scene immediately */
     const ss3d = new SolarSystem3D(document.body, revealSite);
     ss3d.init();
 
     setTimeout(() => ss3d.start(), 300);
   }
 
-  document.getElementById('begin-btn')?.addEventListener('click', launch);
-  document.getElementById('explore-btn')?.addEventListener('click', () => {
-    launch();
-    setTimeout(() => {
-      document.getElementById('planets-container')?.scrollIntoView({ behavior: 'smooth' });
-    }, 1000);
-  });
-
-  /* Trigger on first downward scroll while intro is visible */
-  let scrollTriggered = false;
-  window.addEventListener('wheel', (e) => {
-    if (launched || scrollTriggered) return;
-    if (e.deltaY > 0) { scrollTriggered = true; launch(); }
-  }, { passive: true });
+  // Launch automatically immediately without waiting for a click
+  launch();
 }
 
 // ── Ambient Audio — Violin music + tiny on/off button ────────
